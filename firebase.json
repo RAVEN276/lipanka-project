@@ -1,0 +1,20 @@
+{
+  "hosting": {
+    "site": "lipanka-roadmap",
+    "public": "public",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  },
+  "auth": {
+    "providers": {}
+  }
+}
