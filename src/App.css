@@ -112,7 +112,7 @@
   right: -75px;
   width: 100px;
   height: auto;
-  transform: rotate(15deg);
+  transform: rotate(-1deg);
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
 }
 
