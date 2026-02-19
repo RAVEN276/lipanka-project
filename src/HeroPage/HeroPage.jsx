@@ -1,18 +1,36 @@
 import { useState, useEffect } from 'react'
 import { auth, googleProvider } from '../firebase'
-import { signInWithPopup, onAuthStateChanged } from 'firebase/auth'
+import { signInWithPopup, onAuthStateChanged, updateProfile } from 'firebase/auth'
 import { Routes, Route, useNavigate } from 'react-router-dom'
+import GlassCard from '../components/GlassCard/GlassCard'
 import './HeroPage.css'
 import heroBackground from '../assets/hero-background.svg'
 import kartuIcon from '../assets/Kartu.svg'
 import pialaIcon from '../assets/Piala.svg'
 import SignIn from '../SignIn/SignIn'
 import Profile from '../Profile/Profile'
+import EditProfile from '../EditProfile/EditProfile'
 
 function HeroPage() {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
+
+  const handleSaveProfile = async (updatedData) => {
+    if (!auth.currentUser) return;
+
+    try {
+      await updateProfile(auth.currentUser, updatedData)
+      // Force refresh user state
+      setUser({ ...auth.currentUser, ...updatedData })
+      
+      console.log("Profile updated successfully")
+      navigate('/profile')
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      alert("Failed to update profile. Please try again.")
+    }
+  }
 
   // Listen for auth state changes to persist login across refreshes
   useEffect(() => {
@@ -120,7 +138,7 @@ function HeroPage() {
                 Lorem ipsum dolor sit amet,<br />
                 consectetur adipiscing elit.
               </p>
-              <button className="hero-play-btn" onClick={handleActionClick}>PLAY</button>
+              <GlassCard as="button" className="hero-play-btn" onClick={handleActionClick}>PLAY</GlassCard>
             </>
           } />
           
@@ -140,6 +158,7 @@ function HeroPage() {
               <Profile 
                 user={user} 
                 onLogout={handleLogout} 
+                onEdit={() => navigate('/edit-profile')}
                 onClose={() => navigate('/')} 
               />
             ) : (
@@ -150,7 +169,20 @@ function HeroPage() {
                    <img src={kartuIcon} alt="Kartu" className="hero-kartu" />
                  </div>
                  <SignIn onSignIn={handleSignIn} onBack={handleBack} />
+
                </>
+            )
+          } />
+
+          <Route path="/edit-profile" element={
+            user ? (
+              <EditProfile 
+                user={user} 
+                onSave={handleSaveProfile} 
+                onCancel={() => navigate('/profile')} 
+              />
+            ) : (
+              <SignIn onSignIn={handleSignIn} onBack={handleBack} />
             )
           } />
         </Routes>

@@ -1,14 +1,15 @@
 import React from 'react'
+import GlassCard from '../components/GlassCard/GlassCard'
 import './Profile.css' 
 
-function Profile({ user, onLogout }) {
+function Profile({ user, onLogout, onEdit }) {
   if (!user) return null
 
   return (
     <div className="profile-page-container">
       <h1 className="profile-title">PROFILE</h1>
       
-      <div className="profile-card">
+      <GlassCard className="profile-card">
         <div className="profile-avatar-container">
           <img 
             src={user.photoURL} 
@@ -22,7 +23,7 @@ function Profile({ user, onLogout }) {
         <p className="profile-email">{user.email}</p>
         
         <div className="profile-actions">
-          <button className="profile-btn-edit">
+          <button className="profile-btn-edit" onClick={onEdit}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginRight: '8px'}}>
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
               <circle cx="12" cy="7" r="4"></circle>
@@ -39,7 +40,7 @@ function Profile({ user, onLogout }) {
             Logout
           </button>
         </div>
-      </div>
+      </GlassCard>
       
     </div>
   )

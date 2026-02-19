@@ -152,15 +152,17 @@
   font-size: 2rem;
   letter-spacing: 0.05em;
   color: #fff;
+  /* Specific button overrides */
+  border-radius: 50px;
+  padding: 12px 60px; /* Reduced from 100px to be "a bit" longer but not too wide */
+  min-width: 220px; /* Reduced min-width */
+  
+  /* Slight variations from default glass card if desired, otherwise can remove to inherit */
   background: rgba(0, 0, 0, 0.25);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 50px;
-  padding: 12px 64px;
-  cursor: pointer;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  transition: all 0.2s ease;
+  
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 .hero-play-btn:hover {

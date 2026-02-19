@@ -7,21 +7,9 @@
 }
 
 .signin-card {
-  background: rgba(0, 0, 0, 0.45);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-radius: 20px;
   padding: 40px 60px;
-  width: 100%;
   max-width: 500px;
   text-align: center;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.25),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.05); /* Inner border for depth */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   gap: 32px;
 }
 
@@ -34,6 +22,12 @@
   letter-spacing: 0.02em;
 }
 
+.lipanka-bold {
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 700; /* Bold */
+  margin-left: 6px;
+}
+
 .signin-title .highlight {
   font-family: 'Luckiest Guy', cursive;
   letter-spacing: 0.04em;
@@ -41,10 +35,10 @@
 }
 
 .google-signin-btn {
-  display: flex;
+  display: flex; /* Ensure flex is set for alignment */
   align-items: center;
   gap: 12px;
-  /* Matching hero-play-btn style */
+  /* Matching hero-play-btn style overrides */
   background: rgba(0, 0, 0, 0.25); 
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: white;
@@ -52,13 +46,13 @@
   font-weight: 400; 
   letter-spacing: 0.05em;
   font-size: 1.2rem;
-  padding: 12px 24px;
+  padding: 12px 40px; 
   border-radius: 50px;
-  cursor: pointer;
+  min-width: 220px; /* Matching Hero Page */
+  /* inherited cursor frombutton.glass-card */
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  transition: all 0.2s ease;
+  /* inherited transition */
   width: 100%;
   justify-content: center;
   max-width: 320px;
