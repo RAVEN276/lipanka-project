@@ -1,0 +1,156 @@
+/* ========== Sign In Component ========== */
+.signin-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.signin-card {
+  padding: 40px 60px;
+  max-width: 500px;
+  text-align: center;
+  gap: 32px;
+}
+
+.signin-title {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 500;
+  color: white;
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+
+.lipanka-bold {
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 700; /* Bold */
+  margin-left: 6px;
+}
+
+.signin-title .highlight {
+  font-family: 'Luckiest Guy', cursive;
+  letter-spacing: 0.04em;
+  margin-left: 6px;
+}
+
+.google-signin-btn {
+  display: flex; /* Ensure flex is set for alignment */
+  align-items: center;
+  gap: 12px;
+  /* Matching hero-play-btn style overrides */
+  background: rgba(0, 0, 0, 0.25); 
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  font-family: 'Luckiest Guy', cursive;
+  font-weight: 400; 
+  letter-spacing: 0.05em;
+  font-size: 1.2rem;
+  padding: 12px 40px; 
+  border-radius: 50px;
+  min-width: 220px; /* Matching Hero Page */
+  /* inherited cursor frombutton.glass-card */
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  /* inherited transition */
+  width: 100%;
+  justify-content: center;
+  max-width: 320px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.google-signin-btn:hover {
+  background: rgba(0, 0, 0, 0.35);
+  transform: scale(1.04) translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+  border-color: transparent;
+}
+
+.google-icon {
+  width: 24px;
+  height: 24px;
+}
+
+/* ========== Login Modal ========== */
+.login-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(2px);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.login-modal {
+  background: rgba(40, 40, 40, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  padding: 40px 60px;
+  border-radius: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+  width: 90%;
+  max-width: 480px;
+  animation: scaleUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.login-title {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 500;
+  color: #ffffff;
+  margin-bottom: 32px;
+  line-height: 1.2;
+}
+
+.login-brand {
+  font-family: 'Luckiest Guy', cursive;
+  font-size: 2rem;
+  letter-spacing: 0.05em;
+  display: inline-block;
+  margin-left: 6px;
+}
+
+.google-signin-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background-color: #202428;
+  color: #ffffff;
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 12px 32px;
+  border-radius: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.google-signin-btn:hover {
+  background-color: #2a3035;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.google-signin-btn:active {
+  transform: translateY(0);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
