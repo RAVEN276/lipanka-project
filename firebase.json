@@ -1,7 +1,7 @@
 {
   "hosting": {
     "site": "lipanka-roadmap",
-    "public": "public",
+    "public": "dist",
     "ignore": [
       "firebase.json",
       "**/.*",

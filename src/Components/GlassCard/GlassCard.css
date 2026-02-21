@@ -1,0 +1,30 @@
+.glass-card {
+  background: rgba(0, 0, 0, 0.45); /* Default dark glass */
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 20px;
+  /* Default padding for card usage; override for buttons */
+  padding: 40px; 
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.25),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  
+  /* Flex layout defaults */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* Default width for card usage; override for buttons */
+  width: 100%; 
+  color: white; /* Ensure text is white by default */
+  transition: all 0.3s ease; /* smooth transition for any varied usage */
+}
+
+/* Modifiers for button usage could go here, or just rely on overriding classes */
+button.glass-card {
+  cursor: pointer;
+  width: auto; /* Buttons typically shouldn't be full width by default unless specified */
+  padding: 12px 24px;
+  flex-direction: row; /* Buttons usually have side-by-side content (icon + text) */
+}
