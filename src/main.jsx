@@ -6,8 +6,6 @@ import HeroPage from './HeroPage/HeroPage.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <BrowserRouter>
-      <HeroPage />
-    </BrowserRouter>
+    <App />
   </StrictMode>,
 )
