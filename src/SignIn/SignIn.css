@@ -37,25 +37,26 @@
 .google-signin-btn {
   display: flex; /* Ensure flex is set for alignment */
   align-items: center;
+  justify-content: center; /* Center content */
   gap: 12px;
   /* Matching hero-play-btn style overrides */
   background: rgba(0, 0, 0, 0.25); 
   border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  
   color: white;
   font-family: 'Luckiest Guy', cursive;
   font-weight: 400; 
   letter-spacing: 0.05em;
-  font-size: 1.2rem;
-  padding: 12px 40px; 
+  font-size: 1.5rem; /* Increased size to match play button feel */
+  padding: 16px 40px; /* Increased padding */
   border-radius: 50px;
-  min-width: 220px; /* Matching Hero Page */
-  /* inherited cursor frombutton.glass-card */
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  /* inherited transition */
-  width: 100%;
-  justify-content: center;
-  max-width: 320px;
+  
+  transition: all 0.3s ease;
+  cursor: pointer;
+  width: 100%; /* Full width within container */
+  max-width: 400px; /* Max width */
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
@@ -70,7 +71,6 @@
   width: 24px;
   height: 24px;
 }
-
 /* ========== Login Modal ========== */
 .login-overlay {
   position: fixed;

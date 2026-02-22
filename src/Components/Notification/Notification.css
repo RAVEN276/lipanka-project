@@ -1,0 +1,39 @@
+.notification-wrapper {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  animation: slideDown 0.5s ease-out;
+}
+
+.notification-card {
+  padding: 16px 32px !important;
+  border-radius: 50px !important;
+  background: rgba(139, 124, 99, 0.6) !important; /* Adjust color based on screenshot brownish tint */
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+.notification-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.notification-message {
+  color: white;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translate(-50%, -100%);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+}
