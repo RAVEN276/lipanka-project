@@ -1,0 +1,194 @@
+/* ========== Theme Page ========== */
+
+.theme-page {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.theme-back-btn {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  z-index: 10;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: white;
+  padding: 0;
+}
+
+.theme-back-btn:hover {
+  background: rgba(0, 0, 0, 0.5);
+  transform: scale(1.08);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.theme-back-btn svg {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.theme-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 60px;
+  max-width: 1200px;
+  width: 100%;
+}
+
+/* Left side - Image */
+.theme-image-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 500px;
+}
+
+.theme-image {
+  width: 100%;
+  height: auto;
+  max-width: 400px;
+  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.3));
+  animation: floatAnimation 3s ease-in-out infinite;
+}
+
+@keyframes floatAnimation {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+/* Right side - Content */
+.theme-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  max-width: 500px;
+}
+
+.theme-title {
+  font-family: 'Luckiest Guy', cursive;
+  font-size: 4rem;
+  font-weight: 400;
+  color: #0F2A3B;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  margin: 0;
+  text-shadow: 
+    0 2px 0 rgba(255, 255, 255, 0.15),
+    0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.theme-description {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.15rem;
+  color: #0F2A3B;
+  font-weight: 500;
+  line-height: 1.65;
+  margin: 0;
+  text-shadow: 0 1px 3px rgba(255, 255, 255, 0.3);
+}
+
+.theme-play-btn {
+  font-family: 'Luckiest Guy', cursive;
+  font-size: 1.8rem;
+  letter-spacing: 0.05em;
+  color: #fff;
+  border-radius: 50px;
+  padding: 12px 60px;
+  min-width: 220px;
+  
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  margin-top: 8px;
+}
+
+.theme-play-btn:hover {
+  background: rgba(0, 0, 0, 0.35);
+  transform: scale(1.04) translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+  border-color: transparent;
+}
+
+/* ========== Responsive ========== */
+@media (max-width: 968px) {
+  .theme-content {
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  .theme-image-container {
+    max-width: 350px;
+  }
+
+  .theme-info {
+    align-items: center;
+    text-align: center;
+  }
+
+  .theme-title {
+    font-size: 3.2rem;
+  }
+
+  .theme-description {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .theme-page {
+    padding: 16px;
+  }
+
+  .theme-back-btn {
+    top: 16px;
+    left: 16px;
+    width: 44px;
+    height: 44px;
+  }
+
+  .theme-content {
+    gap: 32px;
+  }
+
+  .theme-image-container {
+    max-width: 280px;
+  }
+
+  .theme-title {
+    font-size: 2.5rem;
+  }
+
+  .theme-description {
+    font-size: 0.95rem;
+  }
+
+  .theme-play-btn {
+    font-size: 1.5rem;
+    padding: 12px 48px;
+  }
+}
