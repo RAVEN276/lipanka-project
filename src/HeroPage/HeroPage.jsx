@@ -10,6 +10,7 @@ import pialaIcon from '../assets/Piala.svg'
 import SignIn from '../SignIn/SignIn'
 import Profile from '../Profile/Profile'
 import EditProfile from '../EditProfile/EditProfile'
+import Leaderboard from '../Leaderboard/Leaderboard'
 
 function HeroPage() {
   const [user, setUser] = useState(null)
@@ -42,12 +43,12 @@ function HeroPage() {
   }, [])
 
   const handleLeaderboardClick = () => {
-    if (!user) {
-      navigate('/signin')
-    } else {
-      console.log("Open leaderboard")
-      // Future logic for leaderboard
-    }
+    // Navigate to leaderboard regardless of login? Usually leaderboards are public, 
+    // but the prompt implies "user clicks icon... straight to page".
+    // I will allow it for now, or check user if needed. 
+    // If I want to restrict: if (!user) navigate('/signin') else ...
+    // For now I'll just navigate.
+    navigate('/leaderboard')
   }
 
   const handleProfileClick = () => {
@@ -184,6 +185,15 @@ function HeroPage() {
             ) : (
               <SignIn onSignIn={handleSignIn} onBack={handleBack} />
             )
+          } />
+          
+          <Route path="/leaderboard" element={
+            <>
+              {/* Optional: Title wrapper if you want the logo/title still visible on top, 
+                  but Leaderboard design usually has its own title "LEADERBOARD". 
+                  We can render just the Leaderboard component. */}
+              <Leaderboard />
+            </>
           } />
         </Routes>
       </div>
