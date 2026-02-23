@@ -1,35 +1,12 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 
 /**
- * TimerBar Component - Real Countdown Timer with Progress Bar
- * Progress bar fills from LEFT TO RIGHT
- * @param {number} totalTime - Total time in seconds (default: 300 = 5 minutes)
- * @param {function} onTimeUp - Callback when timer reaches 0
+ * TimerBar Component - Display Countdown Timer with Progress Bar
+ * @param {number} timeLeft - Current time remaining in seconds
+ * @param {number} totalTime - Total duration for percentage calculation
  * @returns {JSX.Element}
  */
-const TimerBar = ({ totalTime = 60, onTimeUp }) => {
-  const [timeLeft, setTimeLeft] = useState(totalTime)
-
-  // Timer countdown effect
-  useEffect(() => {
-    if (timeLeft <= 0) {
-      if (onTimeUp) onTimeUp()
-      return
-    }
-
-    const interval = setInterval(() => {
-      setTimeLeft(prev => {
-        const newTime = prev - 1
-        if (newTime <= 0) {
-          if (onTimeUp) onTimeUp()
-          return 0
-        }
-        return newTime
-      })
-    }, 1000)
-
-    return () => clearInterval(interval)
-  }, [timeLeft, onTimeUp])
+const TimerBar = ({ timeLeft = 60, totalTime = 60 }) => {
 
   // Calculate percentage for progress bar width
   // Bar fills from LEFT TO RIGHT as time decreases
