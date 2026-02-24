@@ -2,6 +2,8 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getAnalytics } from "firebase/analytics";
+import { getStorage } from "firebase/storage";
+import { getDatabase } from "firebase/database";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -14,6 +16,7 @@ const firebaseConfig = {
   storageBucket: "nusa-quest-prototype.firebasestorage.app",
   messagingSenderId: "127910489204",
   appId: "1:127910489204:web:994dc6dfa1de0c5aecb521",
+  databaseURL: "https://nusa-quest-prototype-default-rtdb.asia-southeast1.firebasedatabase.app",
   measurementId: "G-WY9GMQ457Q"
 };
 
@@ -21,4 +24,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
+export const storage = getStorage(app);
+export const database = getDatabase(app);
 const analytics = getAnalytics(app);

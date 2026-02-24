@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
-import { auth, googleProvider } from '../firebase'
+import { auth, googleProvider, database } from '../firebase'
+import { ref, onValue } from 'firebase/database'
 import { signInWithPopup, onAuthStateChanged, updateProfile } from 'firebase/auth'
 import { Routes, Route, useNavigate } from 'react-router-dom'
 import GlassCard from '../components/GlassCard/GlassCard'
+import Notification from '../components/Notification/Notification'
 import './HeroPage.css'
 import heroBackground from '../assets/hero-background.svg'
 import kartuIcon from '../assets/Kartu.svg'
@@ -16,15 +18,36 @@ import GamePage from '../GamePage/GamePage'
 function HeroPage() {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [notification, setNotification] = useState({ show: false, message: '' })
   const navigate = useNavigate()
+
+  const showNotification = (message) => {
+    setNotification({ show: true, message })
+  }
 
   const handleSaveProfile = async (updatedData) => {
     if (!auth.currentUser) return;
 
     try {
-      await updateProfile(auth.currentUser, updatedData)
-      // Force refresh user state
-      setUser({ ...auth.currentUser, ...updatedData })
+      const profileUpdates = { ...updatedData }
+      const newPhotoURL = updatedData.photoURL; // Simpan foto asli (base64) untuk state lokal
+
+      // Jangan kirim base64 image ke Firebase Auth karena limit karakter
+      // Cek apakah string sangat panjang (indikasi base64) meskipun header mungkin berbeda
+      if (profileUpdates.photoURL && (profileUpdates.photoURL.length > 2000 || profileUpdates.photoURL.startsWith('data:'))) {
+        console.log("Photo URL is too long for Firebase Auth, removing from auth update payload.");
+        delete profileUpdates.photoURL
+      }
+      
+      await updateProfile(auth.currentUser, profileUpdates)
+      
+      // Update local state immediately dengan data lengkap (termasuk foto)
+      // Kita pakai newPhotoURL yang masih ada base64-nya agar langsung tampil di UI tanpa refresh
+      setUser(prev => ({ 
+        ...prev, 
+        displayName: updatedData.displayName,
+        photoURL: newPhotoURL 
+      }))
       
       console.log("Profile updated successfully")
       navigate('/profile')
@@ -36,11 +59,51 @@ function HeroPage() {
 
   // Listen for auth state changes to persist login across refreshes
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser)
+    // Separate cleanup function for database listener
+    let unsubscribeDatabase = () => {}
+
+    const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
+      // Cleanup previous database listener whenever auth state changes
+      unsubscribeDatabase();
+      unsubscribeDatabase = () => {}; 
+
+      if (currentUser) {
+        // Construct basic user object to avoid spreading complex Firebase User object issues
+        const userData = {
+          uid: currentUser.uid,
+          email: currentUser.email,
+          displayName: currentUser.displayName,
+          photoURL: currentUser.photoURL,
+        }
+
+        // Set initial user state
+        setUser(userData)
+
+        // Listen ke Realtime Database untuk photoURL
+        const photoRef = ref(database, 'users/' + currentUser.uid + '/photoURL')
+        
+        // Simpan fungsi unsubscribe ke variable
+        unsubscribeDatabase = onValue(photoRef, (snapshot) => {
+          const photoData = snapshot.val()
+          console.log("Database updated photo:", photoData ? "Found" : "Not Found");
+          if (photoData) {
+            setUser(prevUser => ({ ...prevUser, photoURL: photoData }))
+          }
+        }, (error) => {
+            console.error("Error reading database:", error);
+        })
+
+      } else {
+        setUser(null)
+      }
       setLoading(false)
     })
-    return () => unsubscribe()
+
+    // Cleanup function
+    return () => {
+      unsubscribeAuth()
+      unsubscribeDatabase()
+    }
   }, [])
 
   const handleLeaderboardClick = () => {
@@ -73,6 +136,7 @@ function HeroPage() {
       const result = await signInWithPopup(auth, googleProvider)
       // Navigation will be handled by the user/caller or just redirection
       console.log("User signed in:", result.user)
+      showNotification("Login Successful")
       navigate('/') // Go back to home after sign in
     } catch (error) {
       console.error("Error signing in with Google:", error)
@@ -82,6 +146,7 @@ function HeroPage() {
   const handleLogout = async () => {
     try {
       await auth.signOut()
+      showNotification("Logout Successful")
       navigate('/')
     } catch (error) {
       console.error("Error signing out:", error)
@@ -96,6 +161,11 @@ function HeroPage() {
 
   return (
     <div className="hero-page">
+      <Notification 
+        message={notification.message}
+        show={notification.show}
+        onClose={() => setNotification({ ...notification, show: false })}
+      />
       {/* Background */}
       <img src={heroBackground} alt="Background" className="hero-bg" />
 
