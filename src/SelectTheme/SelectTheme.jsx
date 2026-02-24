@@ -16,31 +16,31 @@ const themes = [
         name: 'Tarian Daerah',
         img: tari,
         description: 'Tarian Nusantara',
-        link: '/tarian-daerah'
+        key: 'tari'
     },
     {
         name: 'Permainan',
         img: permainan,
         description: 'Permainan Nusantara',
-        link: '/permainan'
+        key: 'permainan'
     },
     {
         name: 'Kuliner',
         img: kuliner,
         description: 'Kuliner Nusantara',
-        link: '/kuliner'
+        key: 'kuliner'
     },
     {
         name: 'Alat Musik',
         img: alatmusik,
         description: 'Alat Musik Nusantara',
-        link: '/alat-musik'
+        key: 'musik'
     },
     {
         name: 'Daerah',
         img: daerah,
         description: 'Daerah Nusantara',
-        link: '/daerah'
+        key: 'daerah'
     },
 ]
 
@@ -83,7 +83,7 @@ function SelectTheme() {
 
     const handlePlayClick = (theme) => {
         console.log(`Selected theme: ${theme.name}`);
-        navigate(theme.link);
+        navigate(`/theme/${theme.key}`);
     }
 
     return (
