@@ -1,0 +1,598 @@
+/* ========== Game Page ========== */
+
+.game-page {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding-top: 20px;
+}
+
+.game-loading {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.5rem;
+}
+
+/* ========== Back Button ========== */
+
+.game-back-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 15;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  color: white;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.game-back-btn:hover {
+  background: rgba(0, 0, 0, 0.75);
+}
+
+/* ========== Timer Bar (TOP) ========== */
+
+.game-timer-bar {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  height: auto;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.timer-container {
+  width: 100%;
+  max-width: 700px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 0 40px;
+}
+
+.timer-text {
+  color: #0F2A3B;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  min-width: 70px;
+  text-shadow: 0 2px 4px rgba(255, 255, 255, 0.2);
+}
+
+.timer-progress {
+  flex: 1;
+  height: 12px;
+  background: rgba(180, 180, 170, 0.6);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.timer-progress-fill {
+  height: 100%;
+  background: #1a1a1a;
+  transition: width 0.3s linear;
+  border-radius: 10px;
+}
+
+/* ========== Main Container ========== */
+
+.game-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 60px;
+  padding: 40px;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ========== Left: Question Image Card ========== */
+
+.game-left {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 450px;
+}
+
+.question-card {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 12;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.question-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ========== Right: Answers + Badges ========== */
+
+.game-right {
+  flex: 1;
+  display: flex;
+  gap: 30px;
+  max-width: 600px;
+  align-items: flex-start;
+}
+
+/* ========== Answers Wrapper ========== */
+
+.answers-wrapper {
+  flex: 1;
+  padding: 24px !important;
+  border-radius: 24px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: auto !important;
+  height: auto !important;
+}
+
+/* ========== Answer Grid (STRICT: 2 columns + centered 5th) ========== */
+
+.answers-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 0;
+  width: 100%;
+}
+
+.answer-btn {
+  grid-column: auto;
+  padding: 22px 16px !important;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  border: 2px solid rgba(255, 255, 255, 0.7) !important;
+  border-radius: 16px !important;
+  font-family: 'Luckiest Guy', cursive;
+  font-size: 1rem;
+  font-weight: 400;
+  color: #ffffff !important;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+  min-height: 80px;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center;
+  letter-spacing: 0.03em;
+  line-height: 1.3;
+  width: auto !important;
+  flex-direction: row !important;
+}
+
+/* 5th answer - centered below */
+.answer-btn:nth-child(5) {
+  grid-column: 1 / -1;
+  max-width: calc(50% - 8px);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.answer-btn:hover:not(:disabled) {
+  background: rgba(160, 150, 130, 0.6) !important;
+  border-color: rgba(255, 255, 255, 0.9) !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2) !important;
+}
+
+.answer-btn:disabled {
+  cursor: not-allowed;
+}
+
+.answer-btn.correct {
+  background: rgba(139, 195, 74, 0.9) !important;
+  color: white !important;
+}
+
+.answer-btn.wrong {
+  background: rgba(255, 152, 128, 0.9) !important;
+  color: white !important;
+}
+
+.answer-btn.correct-show {
+  background: rgba(139, 195, 74, 0.85) !important;
+  color: white !important;
+}
+
+.answer-btn.disabled-show {
+  opacity: 0.35;
+}
+
+/* ========== Right Badge Panel ========== */
+
+.badges-panel {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 140px;
+}
+
+.badge {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 14px 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.badge.badge-red {
+  background: rgba(220, 53, 69, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+.badge.badge-green {
+  background: rgba(76, 175, 80, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+.badge-text {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  text-align: center;
+  display: block;
+  letter-spacing: 0.02em;
+}
+
+/* ========== Result Overlay ========== */
+
+.result-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.result-card {
+  position: relative;
+  width: 320px;
+  background: rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border-radius: 24px !important;
+  overflow: hidden !important;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.result-card.correct {
+  background: rgba(139, 195, 74, 0.25) !important;
+  box-shadow: 0 20px 60px rgba(139, 195, 74, 0.3) !important;
+}
+
+.result-card.wrong {
+  background: rgba(255, 152, 128, 0.25) !important;
+  box-shadow: 0 20px 60px rgba(255, 152, 128, 0.3) !important;
+}
+
+.result-inner {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 24px;
+  text-align: center;
+}
+
+.result-image {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 16px;
+  margin-bottom: 8px;
+}
+
+.result-text {
+  font-family: 'Luckiest Guy', cursive;
+  font-size: 1.4rem;
+  color: white;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  margin: 0;
+  letter-spacing: 0.03em;
+  line-height: 1.3;
+}
+
+.result-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.result-icon {
+  width: 80px;
+  height: 80px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+  animation: scaleIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.result-icon.correct {
+  color: rgba(139, 195, 74, 1);
+}
+
+.result-icon.wrong {
+  color: rgba(255, 100, 80, 1);
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ========== Bottom Progress Text ========== */
+
+.game-progress-text {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Luckiest Guy', cursive;
+  font-size: 1.8rem;
+  color: rgba(15, 42, 59, 0.9);
+  text-shadow: 0 2px 8px rgba(255, 255, 255, 0.3);
+  letter-spacing: 0.03em;
+  z-index: 5;
+}
+
+/* ========== Responsive ========== */
+
+@media (max-width: 1100px) {
+  .game-container {
+    gap: 40px;
+    padding: 30px 30px 80px;
+  }
+
+  .game-left {
+    max-width: 380px;
+  }
+
+  .answers-grid {
+    gap: 14px;
+  }
+
+  .answer-btn {
+    font-size: 0.95rem;
+    padding: 20px 14px !important;
+    min-height: 76px;
+  }
+
+  .badges-panel {
+    gap: 12px;
+  }
+
+  .badge {
+    padding: 12px 14px;
+  }
+
+  .badge-text {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 968px) {
+  .game-page {
+    padding-top: 15px;
+  }
+
+  .game-container {
+    flex-direction: column;
+    gap: 30px;
+    padding: 25px 20px 100px;
+  }
+
+  .game-left {
+    max-width: 420px;
+    width: 100%;
+  }
+
+  .game-right {
+    width: 100%;
+    gap: 20px;
+    max-width: 100%;
+  }
+
+  .answers-wrapper {
+    width: 100%;
+  }
+
+  .answer-btn:nth-child(5) {
+    max-width: calc(50% - 7px);
+  }
+
+  .badges-panel {
+    flex-direction: row;
+    gap: 10px;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .badge {
+    flex: 1;
+    max-width: 100px;
+    padding: 10px 12px;
+  }
+
+  .badge-text {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .game-timer-bar {
+    top: 15px;
+  }
+
+  .timer-text {
+    font-size: 1.1rem;
+    min-width: 60px;
+  }
+
+  .game-page {
+    padding-top: 12px;
+  }
+
+  .game-back-btn {
+    top: 16px;
+    left: 16px;
+    padding: 6px 12px;
+    font-size: 0.85rem;
+  }
+
+  .game-container {
+    padding: 20px 16px 90px;
+    gap: 24px;
+  }
+
+  .game-left {
+    max-width: 100%;
+  }
+
+  .question-card {
+    aspect-ratio: 16 / 12;
+    border-radius: 20px;
+  }
+
+  .answers-grid {
+    gap: 12px;
+  }
+
+  .answer-btn {
+    font-size: 0.85rem;
+    padding: 18px 12px !important;
+    min-height: 70px;
+    border-radius: 14px;
+  }
+
+  .answer-btn:nth-child(5) {
+    max-width: calc(50% - 6px);
+  }
+
+  .badges-panel {
+    gap: 8px;
+  }
+
+  .badge {
+    padding: 8px 10px;
+  }
+
+  .badge-text {
+    font-size: 0.7rem;
+  }
+
+  .game-progress-text {
+    bottom: 30px;
+    font-size: 1.5rem;
+  }
+
+  .result-card {
+    width: 280px;
+  }
+
+  .result-text {
+    font-size: 1.2rem;
+  }
+
+  .result-icon {
+    width: 70px;
+    height: 70px;
+  }
+}
+
+@media (max-width: 480px) {
+  .answer-btn {
+    font-size: 0.8rem;
+    padding: 16px 10px !important;
+    min-height: 65px;
+  }
+
+  .answer-btn:nth-child(5) {
+    max-width: calc(50% - 6px);
+  }
+
+  .result-card {
+    width: 260px;
+  }
+
+  .game-progress-text {
+    font-size: 1.3rem;
+  }
+}

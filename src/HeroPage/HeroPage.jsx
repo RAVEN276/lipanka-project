@@ -10,6 +10,8 @@ import pialaIcon from '../assets/Piala.svg'
 import SignIn from '../SignIn/SignIn'
 import Profile from '../Profile/Profile'
 import EditProfile from '../EditProfile/EditProfile'
+import ThemePage from '../ThemePage/ThemePage'
+import GamePage from '../GamePage/GamePage'
 
 function HeroPage() {
   const [user, setUser] = useState(null)
@@ -185,6 +187,10 @@ function HeroPage() {
               <SignIn onSignIn={handleSignIn} onBack={handleBack} />
             )
           } />
+
+          <Route path="/theme/:themeName" element={<ThemePage />} />
+          
+          <Route path="/game/:themeName" element={<GamePage />} />
         </Routes>
       </div>
     </div>
