@@ -21,6 +21,8 @@ function GamePage() {
   const [gameStarted, setGameStarted] = useState(false)
   const [shuffledOptions, setShuffledOptions] = useState([])
   const [isTimeUp, setIsTimeUp] = useState(false)
+  const [score, setScore] = useState(0);
+  const [gameHistory, setGameHistory] = useState([]); // Untuk menyimpan data buat AnswerPage
 
   // Load questions based on theme
   useEffect(() => {
@@ -105,7 +107,7 @@ function GamePage() {
     setIsTimeUp(true)
   }
 
-  // Auto-progress after showing result
+ // Auto-progress after showing result
   useEffect(() => {
     if (!showResultOverlay) return
 
@@ -116,13 +118,19 @@ function GamePage() {
         setShowResultOverlay(false)
       } else {
         console.log('Game Finished')
-        // TODO: Navigate to results page
+        // halaman score
+        navigate('/score', { 
+          state: { 
+            finalScore: score, 
+            history: gameHistory 
+          } 
+        });
       }
     }, 1500)
 
     return () => clearTimeout(timer)
-  }, [showResultOverlay, currentQuestionIndex, questions.length])
-
+    // Update nilai
+  }, [showResultOverlay, currentQuestionIndex, questions.length, navigate, score, gameHistory])
   // Shuffle answers when question changes
   useEffect(() => {
     if (questions.length === 0) return
@@ -137,13 +145,32 @@ function GamePage() {
   }, [currentQuestionIndex, questions])
 
   const handleAnswerClick = (answer) => {
-    if (showResultOverlay || selectedAnswer || isTimeUp) return
+    if (showResultOverlay || selectedAnswer || isTimeUp) return;
 
-    const correct = answer.toUpperCase() === questions[currentQuestionIndex].answer
-    setSelectedAnswer(answer)
-    setIsCorrect(correct)
-    setShowResultOverlay(true)
-  }
+    const correctAnswer = questions[currentQuestionIndex].answer;
+    const correct = answer.toUpperCase() === correctAnswer;
+    
+    setSelectedAnswer(answer);
+    setIsCorrect(correct);
+    
+    // Update Skor
+    if (correct) {
+      setScore(prev => prev + 100); //satu soal 100 poin
+    }
+
+    // riwayat untuk AnswerPage
+    setGameHistory(prev => [
+      ...prev, 
+      { 
+        id: currentQuestionIndex + 1, 
+        kota: correctAnswer, 
+        isCorrect: correct, 
+        img: questions[currentQuestionIndex].imageUrl 
+      }
+    ]);
+
+    setShowResultOverlay(true);
+  };
 
   const handleBack = () => {
     navigate(`/theme/${themeName}`)
