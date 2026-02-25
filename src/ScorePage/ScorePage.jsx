@@ -47,7 +47,7 @@ const ScorePage = () => {
             {/* 3. Tombol Mulai Lagi - Kembali ke pemilihan tema */}
             <button 
               className="score-menu-item" 
-              onClick={() => navigate('/')}
+              onClick={() => navigate(`/game/${location.state?.theme || 'daerah'}`)}
             >
               Mulai Lagi
             </button>
