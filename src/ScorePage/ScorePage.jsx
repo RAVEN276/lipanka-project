@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import GlassCard from '../components/GlassCard/GlassCard'; 
 import './ScorePage.css';
 import heroBg from '../assets/hero-background.svg';
+import confetti from 'canvas-confetti'; 
 
 const ScorePage = () => {
   const location = useLocation();
@@ -11,6 +12,25 @@ const ScorePage = () => {
   // Menangkap data dari GamePage
   const finalScore = location.state?.finalScore || 0;
   const gameHistory = location.state?.history || [];
+  const theme = location.state?.theme || 'daerah';
+
+  // Efek Confetti & Animasi 
+  useEffect(() => {
+    confetti({
+      particleCount: 150,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ['#2d3e33', '#4ade80', '#ffffff']
+    });
+
+    const end = Date.now() + 3000;
+    const frame = () => {
+      confetti({ particleCount: 2, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#4ade80'] });
+      confetti({ particleCount: 2, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#2d3e33'] });
+      if (Date.now() < end) requestAnimationFrame(frame);
+    };
+    frame();
+  }, []);
 
   return (
     <div className="score-page-container" style={{ backgroundImage: `url(${heroBg})` }}>
