@@ -19,31 +19,6 @@
   font-size: 1.5rem;
 }
 
-/* ========== Back Button ========== */
-
-.game-back-btn {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  z-index: 15;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: none;
-  border-radius: 8px;
-  padding: 8px 14px;
-  color: white;
-  font-family: 'Fredoka', sans-serif;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.game-back-btn:hover {
-  background: rgba(0, 0, 0, 0.75);
-}
-
 /* ========== Timer Bar (TOP) ========== */
 
 .game-timer-bar {
@@ -253,36 +228,75 @@
   background: rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  padding: 14px 16px;
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 16px 20px;
+  border-radius: 24px;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-family: 'Fredoka', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: white;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .badge.badge-red {
-  background: rgba(220, 53, 69, 0.85);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+  background: #d63447;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: none;
+  box-shadow: 0 4px 12px rgba(214, 52, 71, 0.35);
+}
+
+.badge.badge-red:hover {
+  transform: translateY(-2px);
+  background: #AC1E31;
+  box-shadow: 0 6px 16px rgba(214, 52, 71, 0.45);
 }
 
 .badge.badge-green {
-  background: rgba(76, 175, 80, 0.85);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+  background: #4ba135;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: none;
+  box-shadow: 0 4px 12px rgba(120, 221, 99, 0.35);
+}
+
+.badge.badge-green:hover {
+  transform: translateY(-2px);
+  background: #9ec5a1;
+  box-shadow: 0 6px 16px rgba(120, 221, 99, 0.35);
+}
+
+.badge-used {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.badge-used:hover {
+  transform: none !important;
+  background: #d63447 !important;
+}
+
+.badge-checkmark {
+  margin-left: 6px;
+  font-size: 1rem;
+  animation: scaleIn 0.4s ease-out;
 }
 
 .badge-text {
   font-family: 'Fredoka', sans-serif;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: white;
   text-align: center;
   display: block;
   letter-spacing: 0.02em;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 /* ========== Result Overlay ========== */
@@ -398,6 +412,67 @@
   }
 }
 
+/* ========== Time's Up Overlay ========== */
+
+.timesup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.timesup-card {
+  position: relative;
+  width: 380px;
+  background: rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border-radius: 32px !important;
+  overflow: hidden !important;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.timesup-inner {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 48px 32px;
+  text-align: center;
+}
+
+.timesup-title {
+  font-family: 'Luckiest Guy', cursive;
+  font-size: 3.2rem;
+  color: #ff6b6b;
+  text-shadow: 0 3px 12px rgba(255, 107, 107, 0.4);
+  margin: 0;
+  letter-spacing: 0.05em;
+  animation: scaleIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.timesup-text {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+  letter-spacing: 0.02em;
+  animation: fadeIn 0.6s ease-in-out 0.2s backwards;
+}
+
 /* ========== Bottom Progress Text ========== */
 
 .game-progress-text {
@@ -411,6 +486,21 @@
   text-shadow: 0 2px 8px rgba(255, 255, 255, 0.3);
   letter-spacing: 0.03em;
   z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.score-display {
+  display: inline-block;
+  padding: 8px 16px;
+  background: rgba(214, 52, 71, 0.25);
+  border: 2px solid #d63447;
+  border-radius: 12px;
+  color: #d63447;
+  font-size: 1.5rem;
+  font-weight: bold;
 }
 
 /* ========== Responsive ========== */
@@ -561,6 +651,11 @@
   .game-progress-text {
     bottom: 30px;
     font-size: 1.5rem;
+  }
+
+  .score-display {
+    font-size: 1.2rem;
+    padding: 6px 12px;
   }
 
   .result-card {

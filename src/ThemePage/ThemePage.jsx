@@ -52,7 +52,7 @@ function ThemePage() {
         <div className="theme-page">
           <button 
             className="theme-back-btn"
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/HeroPage.jsx')}
           >
             ← Back
           </button>
@@ -75,10 +75,21 @@ function ThemePage() {
         {/* Back Button */}
         <button 
           className="theme-back-btn"
-          onClick={() => navigate('/')}
-          aria-label="Back"
+          onClick={() => navigate('/select-theme')}
+          type="button"
+          aria-label="Kembali ke halaman utama"
         >
-          ←
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            style={{ width: '24px', height: '24px' }}
+          >
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
         </button>
 
         {/* Main Theme Content */}
