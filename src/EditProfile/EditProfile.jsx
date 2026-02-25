@@ -1,31 +1,54 @@
 import React, { useState, useRef } from 'react'
 import GlassCard from '../components/GlassCard/GlassCard'
+import { database } from '../firebase'
+import { ref, set } from "firebase/database"
 import './EditProfile.css'
 
 function EditProfile({ user, onSave, onCancel }) {
   const [username, setUsername] = useState(user?.displayName || '')
+  // Cek local storage (cache) dulu, kalau tidak ada baru pakai user.photoURL
   const [photoURL, setPhotoURL] = useState(user?.photoURL || '')
+  
   const fileInputRef = useRef(null)
 
-  const handleSave = () => {
-    // Logic to save profile changes
-    onSave({ displayName: username, photoURL })
+  const handleSave = async () => {
+    console.log("Saving profile...", { username, hasPhoto: !!photoURL });
+
+    // 1. Simpan foto Base64 ke Realtime Database
+    if (photoURL && photoURL.startsWith('data:image')) {
+      try {
+        console.log("Saving photo to database path:", 'users/' + user.uid + '/photoURL');
+        const photoRef = ref(database, 'users/' + user.uid + '/photoURL');
+        await set(photoRef, photoURL);
+        console.log("Photo saved successfully to database");
+      } catch (e) {
+        console.error("GAGAL menyimpan ke Realtime Database:", e);
+        alert(`Gagal menyimpan foto! Error: ${e.message}. \n\nPastikan Rules Database sudah diubah menjadi 'true' untuk write.`);
+        return; // Jangan lanjut save profile kalau foto gagal
+      }
+    } else {
+        console.log("Photo URL is not base64 or empty, skipping database upload");
+    }
+
+    // 2. Update displayName ke Firebase Auth
+    // PhotoURL di object ini akan diupdate di komponen parent juga
+    console.log("Updating auth profile...");
+    onSave({ displayName: username, photoURL: photoURL });
   }
 
   const handleFileChange = (e) => {
-    const file = e.target.files[0]
-    if (file) {
-      // Use FileReader to create a preview URL
-      // In a real production app, you would upload this file to Firebase Storage here
-      // and get the download URL. 
-      // For this prototype, we'll try to use a data URL (Base64) if it's small enough, 
-      // or just assume the user handles storage elsewhere. Start with detailed logging.
-      
+    const selectedFile = e.target.files[0]
+    if (selectedFile) {
+      if (selectedFile.size > 1048487) { // Limit ~1MB agar tidak membebani database
+         alert("Ukuran file terlalu besar! Harap pilih gambar di bawah 1MB.")
+         return
+      }
+
       const reader = new FileReader()
       reader.onloadend = () => {
         setPhotoURL(reader.result)
       }
-      reader.readAsDataURL(file)
+      reader.readAsDataURL(selectedFile)
     }
   }
 
