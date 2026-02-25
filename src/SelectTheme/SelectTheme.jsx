@@ -91,6 +91,24 @@ function SelectTheme() {
             {/* Background */}
             <img src={pageBackground} alt="Background" className="page-bg" />
             <div className="select-theme-content">
+                <button 
+                    className="theme-back-btn"
+                    onClick={() => navigate('/')}
+                    type="button"
+                    aria-label="Kembali ke halaman utama"
+                    >
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        style={{ width: '24px', height: '24px' }}
+                    >
+                        <path d="M15 18l-6-6 6-6" />
+                    </svg>
+                    </button>
                 <h1 className="select-theme-title">SELECT YOUR THEME</h1>
                 <p className="select-theme-subtitle">Have fun playing <strong>LIPANKA</strong></p>
                 <div className="theme-options">

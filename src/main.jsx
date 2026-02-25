@@ -7,15 +7,18 @@ import ThemePage from './ThemePage/ThemePage.jsx'
 import SelectTheme from './SelectTheme/SelectTheme.jsx'
 import Credits from './Credits/Credits.jsx'
 import GamePage from './GamePage/GamePage.jsx'
+import Leaderboard from './Leaderboard/Leaderboard.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<SelectTheme />} />
+        <Route path="/*" element={<HeroPage />} />
+        <Route path="/select-theme" element={<SelectTheme />} />
         <Route path="/theme/:themeName" element={<ThemePage />} />
         <Route path="/credits" element={<Credits />} />
         <Route path="/game/:themeName" element={<GamePage />} />
+        <Route path="/leaderboard" element={<Leaderboard />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,

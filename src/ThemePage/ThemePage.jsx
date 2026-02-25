@@ -75,13 +75,7 @@ function ThemePage() {
         {/* Back Button */}
         <button 
           className="theme-back-btn"
-          onClick={() => navigate('/')}
-          aria-label="Back"
-        >
-          ←
-        </button> <button 
-          className="theme-back-btn"
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/select-theme')}
           type="button"
           aria-label="Kembali ke halaman utama"
         >

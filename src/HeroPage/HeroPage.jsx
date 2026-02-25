@@ -125,7 +125,7 @@ function HeroPage() {
     if (!user) {
       navigate('/signin')
     } else {
-      console.log("Proceed to game", user)
+      navigate('/select-theme')
     }
   }
 
