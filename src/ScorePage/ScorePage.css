@@ -102,6 +102,18 @@
   animation: popIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
+@keyframes floating {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-15px); /* Kartu naik sedikit */
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
 @keyframes popIn {
   0% { opacity: 0; transform: scale(0.5); }
   100% { opacity: 1; transform: scale(1); }
