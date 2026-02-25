@@ -326,11 +326,10 @@ function GamePage() {
         navigate('/score', { 
           state: { 
             finalScore: score, 
-            history: gameHistory 
+            history: gameHistory,
+            theme: themeName
           } 
         });
-        console.log('Game Finished', { totalScore: score })
-        // TODO: Navigate to results page
       }
     }, 1500)
 
@@ -338,7 +337,6 @@ function GamePage() {
 
     // Update nilai
   }, [showResultOverlay, currentQuestionIndex, questions.length, navigate, score, gameHistory])
-  }, [showResultOverlay, currentQuestionIndex, questions.length, score])
 
   // Shuffle answers when question changes
   useEffect(() => {
@@ -352,15 +350,16 @@ function GamePage() {
   const handleAnswerClick = (answer) => {
     if (showResultOverlay || selectedAnswer || isTimeUp) return;
 
-    const correctAnswer = questions[currentQuestionIndex].answer;
-    const correct = answer.toUpperCase() === correctAnswer;
+    const correctAnswer = questions[currentQuestionIndex].correctAnswer;
+    const correct = answer.toUpperCase() === correctAnswer.toUpperCase();
     
     setSelectedAnswer(answer);
     setIsCorrect(correct);
     
     // Update Skor
     if (correct) {
-      setScore(prev => prev + 100); //satu soal 100 poin
+      const pointsToAdd = doubleScoreActive ? 200 : 100;
+      setScore(prev => prev + pointsToAdd); //satu soal 100 poin
     }
 
     // riwayat untuk AnswerPage
