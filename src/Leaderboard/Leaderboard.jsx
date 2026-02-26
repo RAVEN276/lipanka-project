@@ -4,12 +4,14 @@ import PageBackground from '../Components/PageBackground/PageBackground';
 import { database, auth } from '../firebase';
 import { ref, onValue } from 'firebase/database';
 import { useUserPhoto } from '../hooks/useUserPhoto';
+import { useUserName } from '../hooks/useUserName';
 import pialaIcon from '../assets/Piala.svg';
 import './Leaderboard.css';
 
 // Component untuk Top Player dengan live photo
 const TopPlayerCard = ({ player, rank }) => {
   const livePhoto = useUserPhoto(player?.uid, player?.photoURL);
+  const liveName = useUserName(player?.uid, player?.name);
   const getAvatar = (name) => `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0D8ABC&color=fff`;
 
   if (!player) return <div className={`top-player rank-${rank}`} style={{ opacity: 0 }}></div>;
@@ -19,22 +21,24 @@ const TopPlayerCard = ({ player, rank }) => {
   else if (rank === 2) rankClass = 'silver';
   else if (rank === 3) rankClass = 'bronze';
 
+  const displayName = liveName || player?.name || 'Player';
+
   return (
     <div className={`top-player rank-${rank}`}>
       {rank === 1 && <div className="crown-icon">👑</div>}
       <div className={`avatar-wrapper ${rankClass}`}>
         <img 
-          src={livePhoto || player.photoURL || getAvatar(player.name)} 
-          alt={player.name} 
+          src={livePhoto || player.photoURL || getAvatar(displayName)} 
+          alt={displayName} 
           className="avatar"
-          onError={(e) => { e.target.onerror = null; e.target.src = getAvatar(player.name); }}
+          onError={(e) => { e.target.onerror = null; e.target.src = getAvatar(displayName); }}
         />
         <div className={`rank-badge ${rankClass}`}>
           {rank}
         </div>
       </div>
       <div className={`player-card ${rank === 1 ? 'highlight' : ''}`}>
-        <div className="player-name">{player.name}</div>
+        <div className="player-name">{displayName}</div>
         <div className="player-score">{player.score}</div>
       </div>
     </div>
@@ -44,19 +48,22 @@ const TopPlayerCard = ({ player, rank }) => {
 // Component untuk Runner Up dengan live photo
 const RunnerUpPlayer = ({ player, index }) => {
   const livePhoto = useUserPhoto(player?.uid, player?.photoURL);
+  const liveName = useUserName(player?.uid, player?.name);
   const getAvatar = (name) => `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0D8ABC&color=fff`;
+
+  const displayName = liveName || player?.name || 'Player';
 
   return (
     <div className="runner-up-item">
       <div className="rank-number">{index + 4}</div>
       <img 
-        src={livePhoto || player.photoURL || getAvatar(player.name)} 
-        alt={player.name} 
+        src={livePhoto || player.photoURL || getAvatar(displayName)} 
+        alt={displayName} 
         className="mini-avatar"
-        onError={(e) => { e.target.onerror = null; e.target.src = getAvatar(player.name); }}
+        onError={(e) => { e.target.onerror = null; e.target.src = getAvatar(displayName); }}
       />
       <div className="runner-info">
-        <span className="runner-name">{player.name}</span>
+        <span className="runner-name">{displayName}</span>
         <span className="runner-score">{player.score} Pts</span>
       </div>
     </div>

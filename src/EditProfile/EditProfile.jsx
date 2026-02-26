@@ -31,8 +31,16 @@ function EditProfile({ user, onSave, onCancel }) {
         console.log("Photo URL is not base64 or empty, skipping database upload");
     }
 
-    // 2. Update displayName ke Firebase Auth
-    // Photo disimpan di Realtime Database untuk dibaca real-time
+    // 2. Simpan displayName ke Realtime Database untuk dibaca real-time
+    try {
+      const nameRef = ref(database, 'users/' + user.uid + '/displayName');
+      await set(nameRef, username.trim());
+    } catch (e) {
+      console.error("GAGAL menyimpan displayName ke Realtime Database:", e);
+    }
+
+    // 3. Update displayName ke Firebase Auth
+    // Photo dan nama dibaca real-time dari Realtime Database
     console.log("Updating auth profile...");
     onSave({ displayName: username });
   }
