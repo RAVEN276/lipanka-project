@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom'; 
-import GlassCard from '../components/GlassCard/GlassCard';
+import GlassCard from '../Components/GlassCard/GlassCard';
 import './AnswerPage.css';
 import pageBg from '../assets/page-background.svg';
 
