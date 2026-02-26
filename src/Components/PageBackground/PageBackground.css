@@ -12,6 +12,11 @@
   justify-content: center;
 }
 
+.page-background-wrapper.scrollable {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
 .page-background-img {
   position: absolute;
   inset: 0;
@@ -29,4 +34,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.page-background-wrapper.scrollable .page-background-content {
+  min-height: 100%;
+  height: auto;
+  align-items: flex-start;
+  padding: 24px 0 48px;
 }

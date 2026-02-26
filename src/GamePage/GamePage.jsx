@@ -1,8 +1,11 @@
 import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import { ref, get } from 'firebase/database'
 import PageBackground from '../Components/PageBackground/PageBackground'
 import GlassCard from '../Components/GlassCard/GlassCard'
 import TimerBar from '../Components/TimerBar/TimerBar'
+import { database } from '../firebase'
+import { shuffleArray } from '../utils/shuffleArray'
 import './GamePage.css'
 
 const GAME_DURATION = 60 // 5 minutes in seconds
@@ -18,6 +21,8 @@ function GamePage() {
   const [showResultOverlay, setShowResultOverlay] = useState(false)
   const [isCorrect, setIsCorrect] = useState(false)
   const [gameStarted, setGameStarted] = useState(false)
+  const [loadingQuestions, setLoadingQuestions] = useState(true)
+  const [loadError, setLoadError] = useState('')
   const [shuffledOptions, setShuffledOptions] = useState([])
   const [isTimeUp, setIsTimeUp] = useState(false)
   const [gameHistory, setGameHistory] = useState([]); // Untuk menyimpan data buat AnswerPage
@@ -30,10 +35,11 @@ function GamePage() {
 
   // Configure audio looping
   useEffect(() => {
-    timerAudioRef.current.loop = true
+    const audio = timerAudioRef.current
+    audio.loop = true
     return () => {
-      timerAudioRef.current.pause()
-      timerAudioRef.current.currentTime = 0
+      audio.pause()
+      audio.currentTime = 0
     }
   }, [])
   
@@ -46,220 +52,97 @@ function GamePage() {
   const [addTimeUsed, setAddTimeUsed] = useState(false)
 
 
-  // Load questions based on theme
+  // Load questions based on theme from Realtime Database
   useEffect(() => {
     const loadQuestions = async () => {
+      const theme = themeName || 'daerah'
+      setLoadingQuestions(true)
+      setLoadError('')
+      setGameStarted(false)
+
+      // Reset per-game state when theme changes
+      setCurrentQuestionIndex(0)
+      setSelectedAnswer(null)
+      setShowResultOverlay(false)
+      setIsCorrect(false)
+      setScore(0)
+      setGameHistory([])
+      setIsTimeUp(false)
+      setTimeLeft(GAME_DURATION)
+      setTotalGameTime(GAME_DURATION)
+      setDoubleScoreActive(false)
+      setDoubleScoreUsed(false)
+      setFiftyFiftyActive(false)
+      setFiftyFiftyUsed(false)
+      setAddTimeUsed(false)
+
       try {
-        const theme = themeName || 'daerah'
-        
-        // Question data with individual options per question
-        const questionDataMap = {
-          daerah: [
-            {
-              image: 'bandung',
-              correctAnswer: 'BANDUNG',
-              nearAnswer: 'CIMAHI',
-              options: ['CIMAHI', 'PURWARKATA', 'SUKABUMI', 'BANDUNG', 'DEPOK']
-            },
-            {
-              image: 'yogyakarta',
-              correctAnswer: 'YOGYAKARTA',
-              nearAnswer: 'MALANG',
-              options: ['MALANG', 'YOGYAKARTA', 'CILACAP', 'SOLO', 'MAGELANG']
-            },
-            {
-              image: 'lombok',
-              correctAnswer: 'LOMBOK',
-              nearAnswer: 'BALI',
-              options: ['LOMBOK', 'BALI', 'FLORES', 'SUMBA', 'LABUAN BAJO']
-            },
-            {
-              image: 'bali',
-              correctAnswer: 'BALI',
-              nearAnswer: 'LOMBOK',
-              options: ['ACEH', 'BALI', 'BANDUNG', 'SULAWESI', 'RIAU']
-            },
-            {
-              image: 'sumatera barat',
-              correctAnswer: 'SUMATERA BARAT',
-              nearAnswer: 'RIAU',
-              options: ['SUMATERA BARAT', 'RIAU', 'JAMBI', 'BENGKULU', 'LAMPUNG']
-            }
-          ],
-          kuliner: [
-            {
-              image: 'rendang',
-              correctAnswer: 'RENDANG',
-              nearAnswer: 'GULAI',
-              options: ['RENDANG', 'GULAI', 'SOTO', 'LUMPIA', 'SATAI']
-            },
-            {
-              image: 'Gudeg',
-              correctAnswer: 'GUDEG',
-              nearAnswer: 'GADO-GADO',
-              options: ['GUDEG', 'GADO-GADO', 'PERKEDEL', 'NANGKA MUDA', 'SAMBAL']
-            },
-            {
-              image: 'pempek',
-              correctAnswer: 'PEMPEK',
-              nearAnswer: 'TEKWAN',
-              options: ['PEMPEK', 'TEKWAN', 'KUE LAPIS', 'OLU-OLU', 'MARTABAK']
-            },
-            {
-              image: 'satemadura',
-              correctAnswer: 'SATE MADURA',
-              nearAnswer: 'SATE AYAM',
-              options: ['SATE MADURA', 'SATE AYAM', 'SATE KAMBING', 'SATE PADANG', 'BAKSO']
-            },
-            {
-              image: 'nasipecel',
-              correctAnswer: 'NASI PECEL',
-              nearAnswer: 'NASI GORENG',
-              options: ['NASI PECEL', 'NASI GORENG', 'NASI KUNING', 'NASI ULAM', 'RISOTTO']
-            }
-          ],
-          musik: [
-            {
-              image: 'angklung',
-              correctAnswer: 'ANGKLUNG',
-              nearAnswer: 'CALUNG',
-              options: ['ANGKLUNG', 'CALUNG', 'ARAMBA', 'GAMELAN', 'KOLINTANG']
-            },
-            {
-              image: 'gong',
-              correctAnswer: 'GONG',
-              nearAnswer: 'GAMELAN',
-              options: ['GONG', 'GAMELAN', 'TAMBORIN', 'KENDANG', 'BONANG']
-            },
-            {
-              image: 'sasando',
-              correctAnswer: 'SASANDO',
-              nearAnswer: 'ALAT MUSIK PETIK',
-              options: ['SASANDO', 'QANUN', 'OUD', 'ITAR', 'HARPA']
-            },
-            {
-              image: 'tifa',
-              correctAnswer: 'TIFA',
-              nearAnswer: 'KENDANG',
-              options: ['TIFA', 'KENDANG', 'BEDUG', 'DRUM', 'REBANA']
-            },
-            {
-              image: 'suling',
-              correctAnswer: 'SULING',
-              nearAnswer: 'BAMBOO FLUTE',
-              options: ['SULING', 'SERULING', 'FLUTE', 'SERUTU', 'TEROMPET']
-            }
-          ],
-          permainan: [
-            {
-              image: 'kelereng',
-              correctAnswer: 'KELERENG',
-              nearAnswer: 'GASING',
-              options: ['KETAPEL ', 'GASING', 'CONGKLAK', 'BAKIAK', 'KELERENG']
-            },
-            {
-              image: 'bakiak',
-              correctAnswer: 'BAKIAK',
-              nearAnswer: 'EGRANG',
-              options: ['EGRANG', 'LOMPAT TALI', 'BAKIAK', 'GASING', 'ENGKLEK']
-            },
-            {
-              image: 'congklak',
-              correctAnswer: 'CONGKLAK',
-              nearAnswer: 'KELERENG',
-              options: ['CONGKLAK', 'KELERENG', 'GASING', 'BAKIAK', 'EGRANG']
-            },
-            {
-              image: 'egrang',
-              correctAnswer: 'EGRANG',
-              nearAnswer: 'ENGKLEK',
-              options: ['GASING', 'ENGKLEK', 'KELERENG', 'EGRANG', 'BAKIAK']
-            },
-            {
-              image: 'gasing',
-              correctAnswer: 'GASING',
-              nearAnswer: 'KELERENG',
-              options: ['CONGKLAK', 'KELERENG', 'GASING', 'EGRANG', 'BAKIAK']
-            }
-          ],
-          tari: [
-            {
-              image: 'tarisaman',
-              correctAnswer: 'TARI SAMAN',
-              nearAnswer: 'TARI SEUDATI',
-              options: ['TARI SAMAN', 'TARI SEUDATI', 'TARI POCO-POCO', 'TARI RATOEH DUEK', 'TARI MEUSEUKAT']
-            },
-            {
-              image: 'tarikecak',
-              correctAnswer: 'TARI KECAK',
-              nearAnswer: 'TARI PENDET',
-              options: ['TARI KECAK', 'TARI PENDET', 'TARI BARONG', 'TARI TOPENG', 'TARI LEGONG']
-            },
-            {
-              image: 'taripiring',
-              correctAnswer: 'TARI PIRING',
-              nearAnswer: 'TARI TALIPAT',
-              options: ['TARI PIRING', 'TARI TALIPAT', 'TARI LAPIAN', 'TARI GANET', 'TARI RANDAI']
-            },
-            {
-              image: 'tarimerak',
-              correctAnswer: 'TARI MERAK',
-              nearAnswer: 'TARI BURUNG',
-              options: ['TARI MERAK', 'TARI BURUNG', 'TARI JAIPONG', 'TARI TOPENG CIREBON', 'TARI SERIMPI']
-            },
-            {
-              image: 'tarisajojo',
-              correctAnswer: 'TARI SAJOJO',
-              nearAnswer: 'TARI CAKALELE',
-              options: ['TARI SAJOJO', 'TARI CAKALELE', 'TARI PATUDDU', 'TARI BAMBU', 'TARI MOYO']
-            }
-          ]
+        const questionsRef = ref(database, `questions/${theme}`)
+        const snapshot = await get(questionsRef)
+
+        if (!snapshot.exists()) {
+          setQuestions([])
+          setGameStarted(true)
+          return
         }
 
-        const data = questionDataMap[theme] || questionDataMap.daerah
+        const rawData = snapshot.val()
+        const questionList = Array.isArray(rawData)
+          ? rawData
+          : Object.values(rawData)
 
-        // Function to shuffle array
-        const shuffleArray = (array) => {
-          const newArray = [...array];
-          for (let i = newArray.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
-          }
-          return newArray;
-        };
+        const shuffledQuestions = shuffleArray(questionList)
 
-        // Shuffle questions
-        const shuffledQuestions = shuffleArray(data);
-        
-        // Import images dynamically and shuffle options once per question
         const questionsWithImages = await Promise.all(
           shuffledQuestions.map(async (q) => {
-            try {
-              const img = await import(`../assets/soal/${theme}/${q.image}.svg`)
-              // Shuffle options ONCE when loading with helper function
-              const shuffledOpts = shuffleArray(q.options)
+            const imageName = String(q.image || '').replace(/\.svg$/i, '')
+            const shuffledOpts = shuffleArray(q.options || [])
+
+            if (q.imageUrl) {
               return {
                 ...q,
+                image: imageName,
+                imageUrl: q.imageUrl,
+                shuffledOptions: shuffledOpts
+              }
+            }
+
+            if (!imageName) {
+              return {
+                ...q,
+                image: imageName,
+                imageUrl: null,
+                shuffledOptions: shuffledOpts
+              }
+            }
+
+            try {
+              const img = await import(`../assets/soal/${theme}/${imageName}.svg`)
+              return {
+                ...q,
+                image: imageName,
                 imageUrl: img.default,
                 shuffledOptions: shuffledOpts
               }
-            } catch (e) {
-              // Try loading without SVG extension or check path if needed
-              console.error(`Failed to load image for ${q.correctAnswer}`) 
-              const shuffledOpts = shuffleArray(q.options)
+            } catch (error) {
+              console.error(`Failed to load image for ${q.correctAnswer}:`, error)
               return {
                 ...q,
+                image: imageName,
                 imageUrl: null,
                 shuffledOptions: shuffledOpts
               }
             }
           })
         )
-        
+
         setQuestions(questionsWithImages)
         setGameStarted(true)
       } catch (error) {
         console.error('Failed to load questions:', error)
+        setLoadError('Gagal memuat soal. Coba lagi nanti.')
+      } finally {
+        setLoadingQuestions(false)
       }
     }
 
@@ -269,66 +152,55 @@ function GamePage() {
   // Handle background timer audio
   useEffect(() => {
     const audio = timerAudioRef.current
-    // Ensure we only try to play if conditions are met
-    const shouldPlay = gameStarted && !isTimeUp && !showResultOverlay && !isProcessing && timeLeft > 0;
+    const shouldPlay = gameStarted && !isTimeUp && !showResultOverlay && !isProcessing && timeLeft > 0
 
     if (shouldPlay) {
-      // Only play if paused to avoid multiple play calls stack
       if (audio.paused) {
         audio.play().catch(e => console.log('Background audio play error:', e))
       }
     } else {
       audio.pause()
-      // Reset if game over
       if (isTimeUp || timeLeft <= 0) {
         audio.currentTime = 0
       }
     }
-  }, [gameStarted, isTimeUp, showResultOverlay, isProcessing, timeLeft > 0]) // Dependence only on boolean check of time
+  }, [gameStarted, isTimeUp, showResultOverlay, isProcessing, timeLeft])
 
   // Handle timer countdown
-  // Use a ref to prevent double execution if multiple state updates happen quickly
-  const processingTimeOut = useRef(false);
+  const processingTimeOut = useRef(false)
 
-  // Reset processing flag when moving to a new question 
+  // Reset processing flag when moving to a new question
   useEffect(() => {
-     processingTimeOut.current = false;
-  }, [currentQuestionIndex]);
+    processingTimeOut.current = false
+  }, [currentQuestionIndex])
 
   useEffect(() => {
-    // Prevent double execution or execution during transitions
     if (isTimeUp || showResultOverlay || isProcessing || questions.length === 0) return
 
-    // Immediately check if time is up on render
     if (timeLeft <= 0) {
-      if (processingTimeOut.current) return; // Already processed
-      processingTimeOut.current = true;
+      if (processingTimeOut.current) return
+      processingTimeOut.current = true
 
-      // Time ran out for this question
       const currentQuestion = questions[currentQuestionIndex]
       const incorrectAudio = new Audio('/audio/incorrect.mp3')
       incorrectAudio.play().catch(e => console.error('Audio play failed', e))
-      
-      // Treat as incorrect answer and move to next question
+
       setIsCorrect(false)
-      setSelectedAnswer('Waktu Habis!') 
-      
-      // Add to history as incorrect
-      // Use functional update to ensure we have latest state even if update is batched
+      setSelectedAnswer('Waktu Habis!')
+
       setGameHistory(prev => {
-        // Prevent duplicate entries for same question index if this effect somehow fires twice
-        if (prev.some(h => h.id === currentQuestionIndex + 1)) return prev;
-        
+        if (prev.some(h => h.id === currentQuestionIndex + 1)) return prev
+
         return [
-          ...prev, 
-          { 
-            id: currentQuestionIndex + 1, 
-            kota: currentQuestion.correctAnswer, 
-            isCorrect: false, 
-            img: currentQuestion.imageUrl 
+          ...prev,
+          {
+            id: currentQuestionIndex + 1,
+            kota: currentQuestion.correctAnswer,
+            isCorrect: false,
+            img: currentQuestion.imageUrl
           }
         ]
-      });
+      })
 
       setShowResultOverlay(true)
       return
@@ -336,8 +208,7 @@ function GamePage() {
 
     const interval = setInterval(() => {
       setTimeLeft(prev => {
-        // If we hit 0, stop decrementing. The next render will catch it and show result.
-        if (prev <= 0) return 0;
+        if (prev <= 0) return 0
         return prev - 1
       })
     }, 1000)
@@ -345,28 +216,12 @@ function GamePage() {
     return () => clearInterval(interval)
   }, [timeLeft, isTimeUp, showResultOverlay, isProcessing, currentQuestionIndex, questions])
 
-  // Reset timer when moving to next question or starting game
-  useEffect(() => {
-    if (showResultOverlay && currentQuestionIndex < questions.length - 1) {
-       // Pre-reset invisible timer so next question starts fresh
-       // But wait, if we reset here, it might trigger the countdown immediately if overlay hides too fast?
-       // Actually, countdown is paused when showResultOverlay is true. So it is safe to reset here.
-    }
-  }, [showResultOverlay])
-  
   // When question index changes, ensuring clean slate
   useEffect(() => {
     setTimeLeft(GAME_DURATION)
     setTotalGameTime(GAME_DURATION)
     setIsTimeUp(false) // Ensure global time up flag is off for per-question timer
   }, [currentQuestionIndex])
-
-  // Handle timer timeout
-  const handleTimeUp = () => {
-    console.log('Time is up!')
-    setIsTimeUp(true)
-  }
-
 
  // Auto-progress after showing result
   // Add time to timer (for Waktu Tambahan badge)
@@ -453,7 +308,7 @@ function GamePage() {
     return () => clearTimeout(timer)
 
     // Update nilai
-  }, [showResultOverlay, currentQuestionIndex, questions.length, navigate, score, gameHistory])
+  }, [showResultOverlay, currentQuestionIndex, questions.length, navigate, score, gameHistory, themeName])
 
   // Shuffle answers when question changes
   useEffect(() => {
@@ -512,16 +367,18 @@ function GamePage() {
     }, 3000);
   }
 
-  const handleBack = () => {
-    const targetTheme = themeName || 'daerah'
-    console.log('Back clicked, navigating to:', `/theme/${targetTheme}`)
-    navigate(`/theme/${targetTheme}`)
-  }
-
   const currentQuestion = questions[currentQuestionIndex]
 
-  if (!gameStarted || questions.length === 0) {
+  if (loadingQuestions) {
     return <PageBackground><div className="game-loading">Loading...</div></PageBackground>
+  }
+
+  if (loadError) {
+    return <PageBackground><div className="game-loading">{loadError}</div></PageBackground>
+  }
+
+  if (!gameStarted || questions.length === 0) {
+    return <PageBackground><div className="game-loading">Belum ada soal untuk tema ini.</div></PageBackground>
   }
 
   // Apply 50:50 filtering to options

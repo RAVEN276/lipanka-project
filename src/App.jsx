@@ -18,6 +18,7 @@ const Profile = lazy(() => import('./Profile/Profile.jsx'))
 const EditProfile = lazy(() => import('./EditProfile/EditProfile.jsx'))
 const SignIn = lazy(() => import('./SignIn/SignIn.jsx'))
 const AdminPage = lazy(() => import('./AdminPage/AdminPage.jsx'))
+const EditQuestionPage = lazy(() => import('./AdminPage/EditQuestionPage.jsx'))
 const GetUID = lazy(() => import('./GetUID/GetUID.jsx'))
 
 function App() {
@@ -161,6 +162,10 @@ function App() {
           <Route 
             path="/admin" 
             element={user ? <AdminPage /> : <Navigate to="/signin" replace />} 
+          />
+          <Route 
+            path="/admin/edit-question" 
+            element={user ? <EditQuestionPage /> : <Navigate to="/signin" replace />} 
           />
           <Route 
             path="/get-uid" 

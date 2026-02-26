@@ -2,9 +2,11 @@ import React from 'react'
 import './PageBackground.css'
 import pageBackgroundSvg from '../../assets/page-background.svg'
 
-const PageBackground = ({ children }) => {
+const PageBackground = ({ children, scrollable = false, className = '' }) => {
+  const wrapperClass = `page-background-wrapper${scrollable ? ' scrollable' : ''}${className ? ` ${className}` : ''}`
+
   return (
-    <div className="page-background-wrapper">
+    <div className={wrapperClass}>
       <img src={pageBackgroundSvg} alt="Background" className="page-background-img" />
       <div className="page-background-content">
         {children}

@@ -4,6 +4,8 @@ import { auth, database } from '../firebase';
 import { ref, get, set } from 'firebase/database';
 import PageBackground from '../Components/PageBackground/PageBackground';
 import GlassCard from '../Components/GlassCard/GlassCard';
+import QuestionCard from './QuestionCard';
+import { seedQuestions } from '../data/seedQuestions';
 import './AdminPage.css';
 
 function AdminPage() {
@@ -16,15 +18,6 @@ function AdminPage() {
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [editingIndex, setEditingIndex] = useState(null);
-  
-  // Form state untuk edit soal
-  const [editForm, setEditForm] = useState({
-    image: '',
-    correctAnswer: '',
-    nearAnswer: '',
-    options: ['', '', '', '', '']
-  });
 
   const themes = [
     { key: 'daerah', name: 'Daerah' },
@@ -71,7 +64,16 @@ function AdminPage() {
       const snapshot = await get(questionsRef);
       
       if (snapshot.exists()) {
-        setQuestions(snapshot.val());
+        const rawData = snapshot.val();
+        const list = Array.isArray(rawData) ? rawData : Object.values(rawData);
+        const normalized = list.map((q) => ({
+          image: q.image || '',
+          imageUrl: q.imageUrl || '',
+          correctAnswer: q.correctAnswer || '',
+          nearAnswer: q.nearAnswer || '',
+          options: Array.isArray(q.options) ? q.options : ['', '', '', '', '']
+        }));
+        setQuestions(normalized);
       } else {
         // Jika belum ada di database, set kosong
         setQuestions([]);
@@ -106,47 +108,35 @@ function AdminPage() {
   };
 
   const handleEditQuestion = (index) => {
-    setEditingIndex(index);
-    setEditForm({ ...questions[index] });
+    navigate('/admin/edit-question', {
+      state: {
+        theme: selectedTheme,
+        index
+      }
+    });
   };
 
   const handleAddQuestion = () => {
-    const newQuestion = {
-      image: '',
-      correctAnswer: '',
-      nearAnswer: '',
-      options: ['', '', '', '', '']
-    };
-    setQuestions([...questions, newQuestion]);
-    setEditingIndex(questions.length);
-    setEditForm(newQuestion);
+    navigate('/admin/edit-question', {
+      state: {
+        theme: selectedTheme,
+        mode: 'add'
+      }
+    });
   };
 
   const handleDeleteQuestion = (index) => {
     if (!window.confirm('Delete this question?')) return;
     const newQuestions = questions.filter((_, i) => i !== index);
     setQuestions(newQuestions);
-    if (editingIndex === index) {
-      setEditingIndex(null);
-    }
   };
 
-  const handleUpdateQuestion = () => {
-    const newQuestions = [...questions];
-    newQuestions[editingIndex] = { ...editForm };
-    setQuestions(newQuestions);
-    setEditingIndex(null);
+  const handleImportSeed = () => {
+    if (!window.confirm('Import seed questions for this theme? This will replace current list.')) return;
+    const seed = seedQuestions[selectedTheme] || [];
+    setQuestions(seed);
   };
 
-  const handleCancelEdit = () => {
-    setEditingIndex(null);
-  };
-
-  const handleOptionChange = (optionIndex, value) => {
-    const newOptions = [...editForm.options];
-    newOptions[optionIndex] = value;
-    setEditForm({ ...editForm, options: newOptions });
-  };
   // Show loading while checking auth
   if (checkingAuth) {
     return (
@@ -168,7 +158,7 @@ function AdminPage() {
   }
 
   return (
-    <PageBackground>
+    <PageBackground scrollable>
       <div className="admin-container">
         <div className="admin-header">
           <button className="back-btn" onClick={() => navigate('/')}>
@@ -204,6 +194,9 @@ function AdminPage() {
                 <button className="btn-add" onClick={handleAddQuestion}>
                   + Add Question
                 </button>
+                <button className="btn-save" onClick={handleImportSeed}>
+                  Import Seed
+                </button>
                 <button 
                   className="btn-save" 
                   onClick={handleSaveQuestions}
@@ -221,82 +214,14 @@ function AdminPage() {
             ) : (
               <div className="questions-list">
                 {questions.map((q, index) => (
-                  <div key={index} className="question-item">
-                    {editingIndex === index ? (
-                      // Edit Form
-                      <div className="edit-form">
-                        <h3>Edit Question #{index + 1}</h3>
-                        
-                        <label>
-                          Image Name (without .svg):
-                          <input
-                            type="text"
-                            value={editForm.image}
-                            onChange={(e) => setEditForm({ ...editForm, image: e.target.value })}
-                            placeholder="e.g., bandung"
-                          />
-                        </label>
-
-                        <label>
-                          Correct Answer:
-                          <input
-                            type="text"
-                            value={editForm.correctAnswer}
-                            onChange={(e) => setEditForm({ ...editForm, correctAnswer: e.target.value })}
-                            placeholder="e.g., BANDUNG"
-                          />
-                        </label>
-
-                        <label>
-                          Near Answer:
-                          <input
-                            type="text"
-                            value={editForm.nearAnswer}
-                            onChange={(e) => setEditForm({ ...editForm, nearAnswer: e.target.value })}
-                            placeholder="e.g., CIMAHI"
-                          />
-                        </label>
-
-                        <label>Options (5 choices):</label>
-                        {editForm.options.map((opt, i) => (
-                          <input
-                            key={i}
-                            type="text"
-                            value={opt}
-                            onChange={(e) => handleOptionChange(i, e.target.value)}
-                            placeholder={`Option ${i + 1}`}
-                          />
-                        ))}
-
-                        <div className="form-actions">
-                          <button className="btn-update" onClick={handleUpdateQuestion}>
-                            Update
-                          </button>
-                          <button className="btn-cancel" onClick={handleCancelEdit}>
-                            Cancel
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      // View Mode
-                      <div className="question-view">
-                        <h3>Question #{index + 1}</h3>
-                        <p><strong>Image:</strong> {q.image}.svg</p>
-                        <p><strong>Correct:</strong> {q.correctAnswer}</p>
-                        <p><strong>Near:</strong> {q.nearAnswer}</p>
-                        <p><strong>Options:</strong> {q.options.join(', ')}</p>
-                        
-                        <div className="item-actions">
-                          <button className="btn-edit" onClick={() => handleEditQuestion(index)}>
-                            Edit
-                          </button>
-                          <button className="btn-delete" onClick={() => handleDeleteQuestion(index)}>
-                            Delete
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
+                  <QuestionCard 
+                    key={index} 
+                    q={q} 
+                    index={index} 
+                    theme={selectedTheme} 
+                    onEdit={() => handleEditQuestion(index)}
+                    onDelete={() => handleDeleteQuestion(index)}
+                  />
                 ))}
               </div>
             )}
