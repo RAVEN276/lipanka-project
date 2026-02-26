@@ -11,8 +11,19 @@ function HeroPage({ user }) {
   const livePhotoURL = useUserPhoto(user?.uid, user?.photoURL) 
   
   const handleProfileClick = () => {
-    // If user exists, go to profile, otherwise handled by App protection or direct navigation
+    if (!user) {
+      navigate('/signin')
+      return
+    }
     navigate('/profile')
+  }
+
+  const handlePlayClick = () => {
+    if (!user) {
+      navigate('/signin')
+      return
+    }
+    navigate('/select-theme')
   }
 
   return (
@@ -55,7 +66,7 @@ function HeroPage({ user }) {
             Welcome to the Nusantara Quest!<br />
             Test your knowledge of Indonesian Culture.
             </p>
-            <GlassCard as="button" className="hero-play-btn" onClick={() => navigate('/select-theme')}>PLAY</GlassCard>
+            <GlassCard as="button" className="hero-play-btn" onClick={handlePlayClick}>PLAY</GlassCard>
       </div>
     </div>
   )

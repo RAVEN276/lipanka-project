@@ -17,6 +17,8 @@ const ScorePage = lazy(() => import('./ScorePage/ScorePage.jsx'))
 const Profile = lazy(() => import('./Profile/Profile.jsx'))
 const EditProfile = lazy(() => import('./EditProfile/EditProfile.jsx'))
 const SignIn = lazy(() => import('./SignIn/SignIn.jsx'))
+const AdminPage = lazy(() => import('./AdminPage/AdminPage.jsx'))
+const GetUID = lazy(() => import('./GetUID/GetUID.jsx'))
 
 function App() {
   const location = useLocation()
@@ -114,15 +116,32 @@ function App() {
       <Suspense fallback={<LoadingScreen />}>
         <Routes location={displayLocation}>
           <Route path="/" element={<HeroPage user={user} />} />
-          <Route path="/select-theme" element={<SelectTheme />} />
-          <Route path="/theme/:themeName" element={<ThemePage />} />
           <Route path="/credits" element={<Credits />} />
-          <Route path="/game/:themeName" element={<GamePage />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
-          <Route path="/answer" element={<AnswerPage />} />
-          <Route path="/score" element={<ScorePage />} />
           
-          {/* Protected Routes */}
+          {/* Protected Game Routes - Require Login */}
+          <Route 
+            path="/select-theme" 
+            element={user ? <SelectTheme /> : <Navigate to="/signin" replace />} 
+          />
+          <Route 
+            path="/theme/:themeName" 
+            element={user ? <ThemePage /> : <Navigate to="/signin" replace />} 
+          />
+          <Route 
+            path="/game/:themeName" 
+            element={user ? <GamePage /> : <Navigate to="/signin" replace />} 
+          />
+          <Route 
+            path="/answer" 
+            element={user ? <AnswerPage /> : <Navigate to="/signin" replace />} 
+          />
+          <Route 
+            path="/score" 
+            element={user ? <ScorePage /> : <Navigate to="/signin" replace />} 
+          />
+          
+          {/* Protected Profile Routes */}
           <Route 
             path="/profile" 
             element={user ? <Profile user={user} onLogout={handleSignOut} onEdit={() => navigate('/edit-profile')} /> : <Navigate to="/signin" replace />} 
@@ -131,9 +150,21 @@ function App() {
             path="/edit-profile" 
             element={user ? <EditProfile user={user} onSave={handleUpdateProfile} onCancel={() => navigate(-1)} /> : <Navigate to="/signin" replace />} 
           />
+          
+          {/* Sign In Route */}
           <Route 
             path="/signin" 
             element={!user ? <SignIn onSignIn={handleSignIn} /> : <Navigate to="/profile" replace />} 
+          />
+          
+          {/* Admin Routes */}
+          <Route 
+            path="/admin" 
+            element={user ? <AdminPage /> : <Navigate to="/signin" replace />} 
+          />
+          <Route 
+            path="/get-uid" 
+            element={user ? <GetUID /> : <Navigate to="/signin" replace />} 
           />
           
           <Route path="*" element={<HeroPage user={user} />} />

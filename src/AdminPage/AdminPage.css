@@ -1,0 +1,359 @@
+/* ========== Admin Page ========== */
+
+.admin-container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 100vh;
+}
+
+.admin-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.admin-header .back-btn {
+  position: static;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  padding: 0;
+}
+
+.admin-header .back-btn:hover {
+  background: rgba(0, 0, 0, 0.7);
+  transform: scale(1.05);
+}
+
+.admin-header .back-btn svg {
+  width: 24px;
+  height: 24px;
+  color: white;
+  stroke-width: 3px;
+  margin-right: 2px;
+}
+
+.admin-title {
+  font-family: 'Luckiest Guy', cursive;
+  font-size: 2.5rem;
+  color: #0F2A3B;
+  text-transform: uppercase;
+  text-shadow: 
+    0 2px 0 rgba(255, 255, 255, 0.2),
+    0 4px 8px rgba(0, 0, 0, 0.1);
+  letter-spacing: 0.05em;
+}
+
+.admin-content {
+  padding: 2rem;
+}
+
+/* Theme Selector */
+.theme-selector {
+  margin-bottom: 2rem;
+}
+
+.theme-selector h2 {
+  font-family: 'Fredoka', sans-serif;
+  color: white;
+  margin-bottom: 1.5rem;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.theme-buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.theme-btn {
+  padding: 0.75rem 1.5rem;
+  border: 2px solid white;
+  background: white;
+  color: #0F2A3B;
+  border-radius: 50px;
+  cursor: pointer;
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+}
+
+.theme-btn:hover {
+  filter: brightness(1.05);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.25);
+}
+
+.theme-btn.active {
+  background: #2F4F4F;
+  color: white;
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+/* Questions Section */
+.questions-section {
+  margin-top: 2rem;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.section-header h2 {
+  font-family: 'Fredoka', sans-serif;
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.btn-add, .btn-save {
+  padding: 0.75rem 1.5rem;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50px;
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+}
+
+.btn-add {
+  background: #2F4F4F;
+  color: white;
+}
+
+.btn-add:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+}
+
+.btn-save {
+  background: #2F4F4F;
+  color: white;
+}
+
+.btn-save:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+}
+
+.btn-save:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  filter: none;
+}
+
+/* Questions List */
+.questions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.question-item {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 1.5rem;
+  backdrop-filter: blur(10px);
+  transition: all 0.2s ease;
+}
+
+.question-item:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.question-view h3,
+.edit-form h3 {
+  font-family: 'Fredoka', sans-serif;
+  color: white;
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.question-view p {
+  font-family: 'Fredoka', sans-serif;
+  color: rgba(255, 255, 255, 0.95);
+  margin: 0.5rem 0;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.question-view strong {
+  color: white;
+  font-weight: 600;
+}
+
+.item-actions, .form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.btn-edit, .btn-delete, .btn-update, .btn-cancel {
+  padding: 0.75rem 1.5rem;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50px;
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+}
+
+.btn-edit, .btn-update {
+  background: #2F4F4F;
+  color: white;
+}
+
+.btn-edit:hover, .btn-update:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+}
+
+.btn-delete {
+  background: #A52A2A;
+  color: white;
+}
+
+.btn-delete:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+}
+
+.btn-cancel {
+  background: white;
+  color: #0F2A3B;
+  border: 2px solid white;
+}
+
+.btn-cancel:hover {
+  filter: brightness(0.95);
+  transform: translateY(-1px);
+}
+
+/* Edit Form */
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.edit-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  color: white;
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.edit-form input {
+  padding: 12px 16px;
+  border: none;
+  border-radius: 12px;
+  background: white;
+  color: #333;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.edit-form input:focus {
+  outline: none;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1), 0 0 0 2px rgba(255,255,255,0.5);
+}
+
+.edit-form input::placeholder {
+  color: #999;
+}
+
+.loading-text, .empty-text {
+  font-family: 'Fredoka', sans-serif;
+  color: rgba(255, 255, 255, 0.9);
+  text-align: center;
+  padding: 3rem 2rem;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .admin-container {
+    padding: 1rem;
+  }
+
+  .admin-title {
+    font-size: 1.8rem;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .action-buttons {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .btn-add, .btn-save {
+    width: 100%;
+  }
+
+  .theme-buttons {
+    flex-direction: column;
+  }
+
+  .theme-btn {
+    width: 100%;
+    text-align: center;
+  }
+  
+  .item-actions,
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .btn-edit, .btn-delete, .btn-update, .btn-cancel {
+    width: 100%;
+    text-align: center;
+  }
+}
