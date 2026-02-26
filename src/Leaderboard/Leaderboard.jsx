@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import './Leaderboard.css';
-import pageBackground from '../assets/page-background.svg';
-import { database } from '../firebase';
+import { useNavigate } from 'react-router-dom';
+import PageBackground from '../Components/PageBackground/PageBackground';
+import { database, auth } from '../firebase';
 import { ref, onValue } from 'firebase/database';
+import pialaIcon from '../assets/Piala.svg';
+import './Leaderboard.css';
 
 const Leaderboard = () => {
-  const [data, setData] = useState([]);
+  const navigate = useNavigate();
+  const [leaderboardData, setLeaderboardData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const user = auth.currentUser;
 
   useEffect(() => {
     // 1. Dapatkan tanggal hari ini (YYYY-MM-DD)
@@ -27,9 +31,9 @@ const Leaderboard = () => {
 
         // Sort by score descending
         parsedData.sort((a, b) => b.score - a.score);
-        setData(parsedData);
+        setLeaderboardData(parsedData);
       } else {
-        setData([]);
+        setLeaderboardData([]);
       }
       setLoading(false);
     });
@@ -40,81 +44,116 @@ const Leaderboard = () => {
   // Helper untuk avatar default jika kosong
   const getAvatar = (name) => `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0D8ABC&color=fff`;
 
-  // Pisahkan Top 3 dan Runners Up
-  // Format Top 3 agar sesuai urutan tampilan CSS yang ada: Rank 2 (Kiri), Rank 1 (Tengah), Rank 3 (Kanan)
-  // Data sudah terurut berdasarkan skor (Index 0 = Rank 1, Index 1 = Rank 2, Index 2 = Rank 3)
-  
-  const rank1 = data[0];
-  const rank2 = data[1];
-  const rank3 = data[2];
+  // Top 3 Players Logic
+  const topPlayers = [null, null, null]; // [Rank 1, Rank 2, Rank 3] placeholder
+  if (leaderboardData.length > 0) topPlayers[0] = leaderboardData[0];
+  if (leaderboardData.length > 1) topPlayers[1] = leaderboardData[1];
+  if (leaderboardData.length > 2) topPlayers[2] = leaderboardData[2];
 
-  const topThree = [];
-  if (rank2) topThree.push({ ...rank2, rank: 2, color: '#99ACAE' }); // Silver
-  if (rank1) topThree.push({ ...rank1, rank: 1, color: '#E1A414' }); // Gold
-  if (rank3) topThree.push({ ...rank3, rank: 3, color: '#A0613C' }); // Bronze
+  // Runners Up (Rank 4+)
+  const runnersUp = leaderboardData.slice(3);
 
-  const runnersUp = data.slice(3).map((player, index) => ({
-    ...player,
-    rank: index + 4
-  }));
+  const handleProfileClick = () => {
+    navigate('/profile');
+  };
+
+  const renderTopPlayer = (player, rank) => {
+    // If no player for this rank position, return empty invisible div to maintain layout spacing
+    if (!player) return <div key={`empty-${rank}`} className={`top-player rank-${rank}`} style={{ opacity: 0 }}></div>;
+
+    let rankClass = '';
+    
+    // Assign specific classes which control colors in CSS
+    if (rank === 1) rankClass = 'gold';
+    else if (rank === 2) rankClass = 'silver';
+    else if (rank === 3) rankClass = 'bronze';
+
+    return (
+      <div key={player.uid} className={`top-player rank-${rank}`}>
+        {rank === 1 && (
+          <div className="crown-icon">👑</div>
+        )}
+        
+        <div className={`avatar-wrapper ${rankClass}`}>
+          <img 
+            src={player.photoURL || getAvatar(player.name)} 
+            alt={player.name} 
+            className="avatar"
+            onError={(e) => { e.target.onerror = null; e.target.src = getAvatar(player.name); }}
+          />
+          <div className={`rank-badge ${rankClass}`}>
+            {rank}
+          </div>
+        </div>
+        
+        <div className={`player-card ${rank === 1 ? 'highlight' : ''}`}>
+          <div className="player-name">{player.name}</div>
+          <div className="player-score">{player.score}</div>
+        </div>
+      </div>
+    );
+  };
 
   return (
-    <div className="leaderboard-container">
-      {/* Background Image specific for Leaderboard */}
-      <img src={pageBackground} alt="Page Background" className="leaderboard-bg" />
-      
-      <h1 className="leaderboard-title">LEADERBOARD (HARI INI)</h1>
+    <PageBackground>
+      {/* Top Bar - Header for Profile/Leaderboard icons */}
+      <div className="leaderboard-topbar">
+        {/* Back Button */}
+        <button 
+          className="back-btn" 
+          aria-label="Back" 
+          onClick={() => navigate(-1)}
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+      </div>
+
+      <div className="leaderboard-content">
+        <h1 className="leaderboard-title">LEADERBOARD</h1>
 
       {loading ? (
-        <div style={{ color: 'white', textAlign: 'center', marginTop: '50px', fontSize: '1.2rem' }}>Loading...</div>
-      ) : data.length === 0 ? (
-        <div style={{ color: 'white', textAlign: 'center', marginTop: '50px', fontSize: '1.5rem', fontWeight: 'bold' }}>
-          Belum ada skor hari ini. Jadilah yang pertama!
+        <div className="loading-text">Memuat Data...</div>
+      ) : leaderboardData.length === 0 ? (
+        <div className="empty-text">
+          Belum ada skor hari ini.<br/>Jadilah yang pertama!
         </div>
       ) : (
         <>
           <div className="top-three">
-            {topThree.map((player) => (
-              <div key={player.uid || player.rank} className={`top-player rank-${player.rank}`}>
-                <div className="avatar-wrapper" style={{ borderColor: player.color }}>
-                  <img 
-                    src={player.photoURL || getAvatar(player.name)} 
-                    alt={player.name} 
-                    className="avatar"
-                    onError={(e) => { e.target.onerror = null; e.target.src = getAvatar(player.name); }}
-                  />
-                  <div className="rank-badge" style={{ backgroundColor: player.color }}>
-                    {player.rank}
-                  </div>
-                </div>
-                <div className="player-info">
-                  <h3 className="player-name">{player.name}</h3>
-                  <p className="player-score">{player.score}</p>
-                </div>
-              </div>
-            ))}
+             {/* Render Order for Podium: Rank 2 (Left), Rank 1 (Center), Rank 3 (Right) */}
+             {renderTopPlayer(topPlayers[1], 2)}
+             {renderTopPlayer(topPlayers[0], 1)}
+             {renderTopPlayer(topPlayers[2], 3)}
           </div>
 
-          <div className="runners-up-list">
-            {runnersUp.map((player) => (
-              <div key={player.uid || player.rank} className="list-item">
-                <div className="list-left">
-                  <span className="list-rank">{player.rank}</span>
-                  <img 
-                    src={player.photoURL || getAvatar(player.name)} 
-                    alt={player.name} 
-                    className="list-avatar" 
-                    onError={(e) => { e.target.onerror = null; e.target.src = getAvatar(player.name); }}
-                  />
-                  <span className="list-name">{player.name}</span>
+            {/* Runners Up List */}
+            {runnersUp.length > 0 && (
+              <div className="runners-up-container">
+                <div className="runners-up-list">
+                  {runnersUp.map((player, index) => (
+                    <div key={player.uid || index} className="runner-up-item">
+                      <div className="rank-number">{index + 4}</div>
+                      <img 
+                        src={player.photoURL || getAvatar(player.name)} 
+                        alt={player.name} 
+                        className="mini-avatar"
+                        onError={(e) => { e.target.onerror = null; e.target.src = getAvatar(player.name); }}
+                      />
+                      <div className="runner-info">
+                        <span className="runner-name">{player.name}</span>
+                        <span className="runner-score">{player.score} Pts</span>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <span className="list-score">{player.score}</span>
               </div>
-            ))}
-          </div>
-        </>
-      )}
-    </div>
+            )}
+          </>
+        )}
+      </div>
+    </PageBackground>
   );
 };
 

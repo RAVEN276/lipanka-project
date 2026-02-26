@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import PageBackground from '../Components/PageBackground/PageBackground'
-import GlassCard from '../components/GlassCard/GlassCard'
+import GlassCard from '../Components/GlassCard/GlassCard'
 import './ThemePage.css'
 import kulinerBg from '../assets/page-background.svg'
 
@@ -74,21 +74,12 @@ function ThemePage() {
       <div className="theme-page">
         {/* Back Button */}
         <button 
-          className="theme-back-btn"
+          className="back-btn" 
+          aria-label="Back" 
           onClick={() => navigate('/select-theme')}
-          type="button"
-          aria-label="Kembali ke halaman utama"
         >
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            style={{ width: '24px', height: '24px' }}
-          >
-            <path d="M15 18l-6-6 6-6" />
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
           </svg>
         </button>
 

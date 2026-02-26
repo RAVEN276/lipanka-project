@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import GlassCard from '../components/GlassCard/GlassCard'; 
+import GlassCard from '../Components/GlassCard/GlassCard'; 
 import './ScorePage.css';
 import heroBg from '../assets/hero-background.svg';
 import { auth, database } from '../firebase';

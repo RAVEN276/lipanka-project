@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import PageBackground from '../Components/PageBackground/PageBackground'
-import GlassCard from '../components/GlassCard/GlassCard'
+import GlassCard from '../Components/GlassCard/GlassCard'
 import TimerBar from '../Components/TimerBar/TimerBar'
 import './GamePage.css'
 
@@ -23,6 +23,19 @@ function GamePage() {
   const [gameHistory, setGameHistory] = useState([]); // Untuk menyimpan data buat AnswerPage
   const [timeLeft, setTimeLeft] = useState(GAME_DURATION)
   const [totalGameTime, setTotalGameTime] = useState(GAME_DURATION)
+  const [isProcessing, setIsProcessing] = useState(false)
+  
+  // Audio ref
+  const timerAudioRef = useRef(new Audio('/audio/timer.mp3'))
+
+  // Configure audio looping
+  useEffect(() => {
+    timerAudioRef.current.loop = true
+    return () => {
+      timerAudioRef.current.pause()
+      timerAudioRef.current.currentTime = 0
+    }
+  }, [])
   
   // Badge states
   const [score, setScore] = useState(0)
@@ -30,6 +43,7 @@ function GamePage() {
   const [doubleScoreUsed, setDoubleScoreUsed] = useState(false)
   const [fiftyFiftyActive, setFiftyFiftyActive] = useState(false)
   const [fiftyFiftyUsed, setFiftyFiftyUsed] = useState(false)
+  const [addTimeUsed, setAddTimeUsed] = useState(false)
 
 
   // Load questions based on theme
@@ -203,22 +217,36 @@ function GamePage() {
         }
 
         const data = questionDataMap[theme] || questionDataMap.daerah
+
+        // Function to shuffle array
+        const shuffleArray = (array) => {
+          const newArray = [...array];
+          for (let i = newArray.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+          }
+          return newArray;
+        };
+
+        // Shuffle questions
+        const shuffledQuestions = shuffleArray(data);
         
         // Import images dynamically and shuffle options once per question
         const questionsWithImages = await Promise.all(
-          data.map(async (q) => {
+          shuffledQuestions.map(async (q) => {
             try {
               const img = await import(`../assets/soal/${theme}/${q.image}.svg`)
-              // Shuffle options ONCE when loading
-              const shuffledOpts = [...q.options].sort(() => Math.random() - 0.5)
+              // Shuffle options ONCE when loading with helper function
+              const shuffledOpts = shuffleArray(q.options)
               return {
                 ...q,
                 imageUrl: img.default,
                 shuffledOptions: shuffledOpts
               }
             } catch (e) {
-              console.error(`Failed to load image for ${q.correctAnswer}`)
-              const shuffledOpts = [...q.options].sort(() => Math.random() - 0.5)
+              // Try loading without SVG extension or check path if needed
+              console.error(`Failed to load image for ${q.correctAnswer}`) 
+              const shuffledOpts = shuffleArray(q.options)
               return {
                 ...q,
                 imageUrl: null,
@@ -238,28 +266,100 @@ function GamePage() {
     loadQuestions()
   }, [themeName])
 
-  // Handle timer countdown
+  // Handle background timer audio
   useEffect(() => {
+    const audio = timerAudioRef.current
+    // Ensure we only try to play if conditions are met
+    const shouldPlay = gameStarted && !isTimeUp && !showResultOverlay && !isProcessing && timeLeft > 0;
+
+    if (shouldPlay) {
+      // Only play if paused to avoid multiple play calls stack
+      if (audio.paused) {
+        audio.play().catch(e => console.log('Background audio play error:', e))
+      }
+    } else {
+      audio.pause()
+      // Reset if game over
+      if (isTimeUp || timeLeft <= 0) {
+        audio.currentTime = 0
+      }
+    }
+  }, [gameStarted, isTimeUp, showResultOverlay, isProcessing, timeLeft > 0]) // Dependence only on boolean check of time
+
+  // Handle timer countdown
+  // Use a ref to prevent double execution if multiple state updates happen quickly
+  const processingTimeOut = useRef(false);
+
+  // Reset processing flag when moving to a new question 
+  useEffect(() => {
+     processingTimeOut.current = false;
+  }, [currentQuestionIndex]);
+
+  useEffect(() => {
+    // Prevent double execution or execution during transitions
+    if (isTimeUp || showResultOverlay || isProcessing || questions.length === 0) return
+
+    // Immediately check if time is up on render
     if (timeLeft <= 0) {
-      setIsTimeUp(true)
-      console.log('Time is up!')
+      if (processingTimeOut.current) return; // Already processed
+      processingTimeOut.current = true;
+
+      // Time ran out for this question
+      const currentQuestion = questions[currentQuestionIndex]
+      const incorrectAudio = new Audio('/audio/incorrect.mp3')
+      incorrectAudio.play().catch(e => console.error('Audio play failed', e))
+      
+      // Treat as incorrect answer and move to next question
+      setIsCorrect(false)
+      setSelectedAnswer('Waktu Habis!') 
+      
+      // Add to history as incorrect
+      // Use functional update to ensure we have latest state even if update is batched
+      setGameHistory(prev => {
+        // Prevent duplicate entries for same question index if this effect somehow fires twice
+        if (prev.some(h => h.id === currentQuestionIndex + 1)) return prev;
+        
+        return [
+          ...prev, 
+          { 
+            id: currentQuestionIndex + 1, 
+            kota: currentQuestion.correctAnswer, 
+            isCorrect: false, 
+            img: currentQuestion.imageUrl 
+          }
+        ]
+      });
+
+      setShowResultOverlay(true)
       return
     }
 
     const interval = setInterval(() => {
       setTimeLeft(prev => {
-        const newTime = prev - 1
-        if (newTime <= 0) {
-          setIsTimeUp(true)
-          console.log('Time is up!')
-          return 0
-        }
-        return newTime
+        // If we hit 0, stop decrementing. The next render will catch it and show result.
+        if (prev <= 0) return 0;
+        return prev - 1
       })
     }, 1000)
 
     return () => clearInterval(interval)
-  }, [timeLeft])
+  }, [timeLeft, isTimeUp, showResultOverlay, isProcessing, currentQuestionIndex, questions])
+
+  // Reset timer when moving to next question or starting game
+  useEffect(() => {
+    if (showResultOverlay && currentQuestionIndex < questions.length - 1) {
+       // Pre-reset invisible timer so next question starts fresh
+       // But wait, if we reset here, it might trigger the countdown immediately if overlay hides too fast?
+       // Actually, countdown is paused when showResultOverlay is true. So it is safe to reset here.
+    }
+  }, [showResultOverlay])
+  
+  // When question index changes, ensuring clean slate
+  useEffect(() => {
+    setTimeLeft(GAME_DURATION)
+    setTotalGameTime(GAME_DURATION)
+    setIsTimeUp(false) // Ensure global time up flag is off for per-question timer
+  }, [currentQuestionIndex])
 
   // Handle timer timeout
   const handleTimeUp = () => {
@@ -271,14 +371,23 @@ function GamePage() {
  // Auto-progress after showing result
   // Add time to timer (for Waktu Tambahan badge)
   const handleAddTime = () => {
-    setTimeLeft(prev => prev + 10)
-    setTotalGameTime(prev => prev + 10)
-    console.log('Added 10 seconds to timer')
+    if (!addTimeUsed) {
+      const audio = new Audio('/audio/fragment.mp3')
+      audio.play().catch(e => console.error('Audio play failed', e))
+
+      setTimeLeft(prev => prev + 10)
+      setTotalGameTime(prev => prev + 10)
+      setAddTimeUsed(true)
+      console.log('Added 10 seconds to timer')
+    }
   }
 
   // Handle Score x2 badge
   const handleDoubleScoreClick = () => {
     if (!doubleScoreUsed) {
+      const audio = new Audio('/audio/fragment.mp3')
+      audio.play().catch(e => console.error('Audio play failed', e))
+
       setDoubleScoreActive(true)
       setDoubleScoreUsed(true)
       console.log('Score x2 activated')
@@ -288,6 +397,9 @@ function GamePage() {
   // Handle 50:50 badge
   const handleFiftyFiftyClick = () => {
     if (!fiftyFiftyUsed) {
+      const audio = new Audio('/audio/fragment.mp3')
+      audio.play().catch(e => console.error('Audio play failed', e))
+
       setFiftyFiftyActive(true)
       setFiftyFiftyUsed(true)
       console.log('50:50 activated')
@@ -316,6 +428,11 @@ function GamePage() {
       setFiftyFiftyActive(false)
 
       if (currentQuestionIndex < questions.length - 1) {
+        // Explicitly reset timer state before hiding overlay to prevent race condition
+        // where the timer effect sees timeLeft=0 on the new question
+        setTimeLeft(GAME_DURATION)
+        setTotalGameTime(GAME_DURATION)
+        
         setCurrentQuestionIndex(currentQuestionIndex + 1)
         setSelectedAnswer(null)
         setShowResultOverlay(false)
@@ -348,32 +465,51 @@ function GamePage() {
   }, [currentQuestionIndex, questions])
 
   const handleAnswerClick = (answer) => {
-    if (showResultOverlay || selectedAnswer || isTimeUp) return;
+    if (showResultOverlay || selectedAnswer || isTimeUp || isProcessing) return;
 
-    const correctAnswer = questions[currentQuestionIndex].correctAnswer;
-    const correct = answer.toUpperCase() === correctAnswer.toUpperCase();
-    
+    // Start suspense sequence
+    setIsProcessing(true);
     setSelectedAnswer(answer);
-    setIsCorrect(correct);
-    
-    // Update Skor
-    if (correct) {
-      const pointsToAdd = doubleScoreActive ? 200 : 100;
-      setScore(prev => prev + pointsToAdd); //satu soal 100 poin
-    }
 
-    // riwayat untuk AnswerPage
-    setGameHistory(prev => [
-      ...prev, 
-      { 
-        id: currentQuestionIndex + 1, 
-        kota: correctAnswer, 
-        isCorrect: correct, 
-        img: questions[currentQuestionIndex].imageUrl 
+    // Play drumroll sound immediately
+    const drumroll = new Audio('/audio/drumroll.mp3');
+    drumroll.play().catch(error => console.error('Error playing drumroll:', error));
+
+    // Wait for 3 seconds before showing result
+    setTimeout(() => {
+      // Stop drumroll
+      drumroll.pause();
+      drumroll.currentTime = 0;
+
+      const correctAnswer = questions[currentQuestionIndex].correctAnswer;
+      const correct = answer.toUpperCase() === correctAnswer.toUpperCase();
+
+      // Play result sound
+      const audio = new Audio(correct ? '/audio/correct.mp3' : '/audio/incorrect.mp3');
+      audio.play().catch(error => console.error('Error playing sound:', error));
+      
+      setIsCorrect(correct);
+      
+      // Update Skor
+      if (correct) {
+        const pointsToAdd = doubleScoreActive ? 200 : 100;
+        setScore(prev => prev + pointsToAdd); //satu soal 100 poin
       }
-    ]);
 
-    setShowResultOverlay(true);
+      // riwayat untuk AnswerPage
+      setGameHistory(prev => [
+        ...prev, 
+        { 
+          id: currentQuestionIndex + 1, 
+          kota: correctAnswer, 
+          isCorrect: correct, 
+          img: questions[currentQuestionIndex].imageUrl 
+        }
+      ]);
+
+      setIsProcessing(false);
+      setShowResultOverlay(true);
+    }, 3000);
   }
 
   const handleBack = () => {
@@ -437,17 +573,19 @@ function GamePage() {
                       as="button"
                       className={`answer-btn ${
                         selectedAnswer === answer 
-                          ? isCorrect 
-                            ? 'correct' 
-                            : 'wrong'
+                          ? isProcessing 
+                            ? 'processing-answer'
+                            : isCorrect 
+                              ? 'correct' 
+                              : 'wrong'
                           : showResultOverlay && answer === currentQuestion.correctAnswer
                           ? 'correct-show'
-                          : showResultOverlay
+                          : showResultOverlay || isProcessing
                           ? 'disabled-show'
                           : ''
                       }`}
                       onClick={() => handleAnswerClick(answer)}
-                      disabled={showResultOverlay || selectedAnswer || isTimeUp || isHiddenBy50x50}
+                      disabled={showResultOverlay || selectedAnswer || isTimeUp || isHiddenBy50x50 || isProcessing}
                       style={isHiddenBy50x50 ? { opacity: 0.3, pointerEvents: 'none' } : {}}
                     >
                       {answer}
@@ -478,11 +616,13 @@ function GamePage() {
                 {fiftyFiftyUsed && <span className="badge-checkmark">✓</span>}
               </button>
               <button 
-                className="badge badge-green"
+                className={`badge badge-red ${addTimeUsed ? 'badge-used' : ''}`}
                 onClick={handleAddTime}
+                disabled={addTimeUsed}
                 type="button"
               >
                 <span className="badge-text">Waktu Tambahan</span>
+                {addTimeUsed && <span className="badge-checkmark">✓</span>}
               </button>
             </div>
           </div>
@@ -512,6 +652,27 @@ function GamePage() {
                       <line x1="6" y1="6" x2="18" y2="18" strokeLinecap="round"/>
                     </svg>
                   )}
+                </div>
+              </div>
+            </GlassCard>
+          </div>
+        )}
+
+        {/* Suspense / Processing Overlay */}
+        {isProcessing && (
+          <div className="result-overlay">
+            <GlassCard className="result-card suspense">
+              <div className="result-inner">
+                 {currentQuestion.imageUrl && (
+                  <img 
+                    src={currentQuestion.imageUrl} 
+                    alt="Checking..." 
+                    className="result-image"
+                  />
+                )}
+                <p className="result-text">{selectedAnswer}</p>
+                 <div className="result-icon-wrapper">
+                  <span className="suspense-icon">?</span>
                 </div>
               </div>
             </GlassCard>
