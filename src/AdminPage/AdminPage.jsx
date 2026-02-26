@@ -5,6 +5,7 @@ import { ref, get, set } from 'firebase/database';
 import PageBackground from '../Components/PageBackground/PageBackground';
 import GlassCard from '../Components/GlassCard/GlassCard';
 import QuestionCard from './QuestionCard';
+import Sidebar from '../Components/Sidebar/Sidebar'; // Improved Sidebar
 import { seedQuestions } from '../data/seedQuestions';
 import './AdminPage.css';
 
@@ -158,75 +159,95 @@ function AdminPage() {
   }
 
   return (
-    <PageBackground scrollable>
-      <div className="admin-container">
-        <div className="admin-header">
-          <button className="back-btn" onClick={() => navigate('/')}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <polyline points="15 18 9 12 15 6"></polyline>
-            </svg>
-          </button>
-          <h1 className="admin-title">ADMIN - MANAGE QUESTIONS</h1>
-        </div>
-
-        <GlassCard className="admin-content">
-          {/* Theme Selector */}
-          <div className="theme-selector">
-            <h2>Select Theme:</h2>
-            <div className="theme-buttons">
-              {themes.map(theme => (
-                <button
-                  key={theme.key}
-                  className={`theme-btn ${selectedTheme === theme.key ? 'active' : ''}`}
-                  onClick={() => setSelectedTheme(theme.key)}
-                >
-                  {theme.name}
-                </button>
-              ))}
-            </div>
+    <PageBackground scrollable={false}>
+      <div className="admin-layout">
+        <Sidebar />
+        
+        <div className="admin-main-content">
+          <div className="admin-content-header">
+             <h1 className="admin-title">Manage Questions</h1>
+             <p className="admin-subtitle">Add, edit, or remove questions for the game.</p>
           </div>
 
-          {/* Questions List */}
-          <div className="questions-section">
-            <div className="section-header">
-              <h2>Questions ({questions.length})</h2>
-              <div className="action-buttons">
-                <button className="btn-add" onClick={handleAddQuestion}>
-                  + Add Question
-                </button>
-                <button className="btn-save" onClick={handleImportSeed}>
-                  Import Seed
-                </button>
-                <button 
-                  className="btn-save" 
-                  onClick={handleSaveQuestions}
-                  disabled={saving}
-                >
-                  {saving ? 'Saving...' : 'Save All'}
-                </button>
-              </div>
-            </div>
-
-            {loading ? (
-              <p className="loading-text">Loading questions...</p>
-            ) : questions.length === 0 ? (
-              <p className="empty-text">No questions yet. Click "Add Question" to start.</p>
-            ) : (
-              <div className="questions-list">
-                {questions.map((q, index) => (
-                  <QuestionCard 
-                    key={index} 
-                    q={q} 
-                    index={index} 
-                    theme={selectedTheme} 
-                    onEdit={() => handleEditQuestion(index)}
-                    onDelete={() => handleDeleteQuestion(index)}
-                  />
+          <GlassCard className="admin-glass-panel">
+            {/* Theme Selector - Horizontal Scroll on Mobile */}
+            <div className="theme-tabs-container">
+              <div className="theme-tabs">
+                {themes.map(theme => (
+                  <button
+                    key={theme.key}
+                    className={`theme-tab-btn ${selectedTheme === theme.key ? 'active' : ''}`}
+                    onClick={() => setSelectedTheme(theme.key)}
+                  >
+                    {theme.name}
+                  </button>
                 ))}
               </div>
-            )}
-          </div>
-        </GlassCard>
+            </div>
+
+            {/* Questions List */}
+            <div className="questions-section">
+              <div className="section-header">
+                <h2>{themes.find(t => t.key === selectedTheme)?.name} Questions <span className="count-badge">{questions.length}</span></h2>
+                <div className="action-buttons">
+                  <button className="btn-save" onClick={handleImportSeed}>
+                    Import Seed
+                  </button>
+                  <button 
+                    className="btn-save" 
+                    onClick={handleSaveQuestions}
+                    disabled={saving}
+                  >
+                    {saving ? 'Saving...' : 'Save All'}
+                  </button>
+                  <button className="btn-add-new" onClick={handleAddQuestion}>
+                    + Add New
+                  </button>
+                </div>
+              </div>
+
+              {loading ? (
+                <div className="loading-state">
+                  <div className="spinner"></div>
+                  <p>Loading questions...</p>
+                </div>
+              ) : questions.length === 0 ? (
+                <div className="empty-state">
+                   <p>No questions found for this theme.</p>
+                   <button className="btn-text" onClick={handleAddQuestion}>Click here to add one</button>
+                </div>
+              ) : (
+                <div className="questions-table-wrapper">
+                <table className="questions-table">
+                  <thead>
+                    <tr>
+                      <th width="60" className="th-center">#</th>
+                      <th width="100">Image</th>
+                      <th width="180">Name</th>
+                      <th width="150">Correct</th>
+                      <th width="120">Near</th>
+                      <th>Options</th>
+                      <th width="120" className="th-right">Actions</th>
+                    </tr>
+                  </thead>
+                    <tbody>
+                      {questions.map((q, index) => (
+                        <QuestionCard 
+                          key={index} 
+                          q={q} 
+                          index={index} 
+                          theme={selectedTheme} 
+                          onEdit={() => handleEditQuestion(index)}
+                          onDelete={() => handleDeleteQuestion(index)}
+                        />
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </GlassCard>
+        </div>
       </div>
     </PageBackground>
   );

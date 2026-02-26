@@ -140,14 +140,30 @@ function EditQuestionPage() {
       const nextQuestions = [...questions];
       const payload = {
         ...editForm,
-        options: Array.isArray(editForm.options) ? editForm.options : ['', '', '', '', '']
+        options: Array.isArray(editForm.options) ? editForm.options : ['', '', '', '', ''] 
       };
 
       if (mode === 'add') {
-        nextQuestions.push(payload);
+        const questionsRef = ref(database, `questions/${theme}`);
+        await set(questionsRef, [...questions, payload]);
       } else {
-        nextQuestions[index] = payload;
+        const questionRef = ref(database, `questions/${theme}/${index}`);
+        await set(questionRef, payload);
       }
+
+      alert('Question saved successfully!');
+      navigate('/admin');
+    } catch (saveError) {
+      console.error('Error saving question:', saveError);
+      alert('Failed to save question: ' + saveError.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleCancel = () => {
+    navigate('/admin');
+  };
 
       const questionsRef = ref(database, `questions/${theme}`);
       await set(questionsRef, nextQuestions);

@@ -4,11 +4,12 @@
   width: 100%;
   padding: 2rem;
   max-width: 1200px;
-  margin: 0 auto;
-  min-height: 100vh;
+  /* Removed min-height to allow flex centering from parent PageBackground if needed, 
+     but added margin for spacing from top/bottom */
+  margin: 2rem auto; 
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start; /* Changed from center to start */
 }
 
 .edit-question-header {

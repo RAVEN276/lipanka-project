@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useUserPhoto } from '../hooks/useUserPhoto'
 import GlassCard from '../Components/GlassCard/GlassCard'
 import './HeroPage.css'
@@ -62,6 +62,10 @@ function HeroPage({ user }) {
             </p>
             <GlassCard as="button" className="hero-play-btn" onClick={handlePlayClick}>PLAY</GlassCard>
       </div>
+
+      <footer className="hero-footer">
+        <Link to="/credits" className="hero-footer-text">©2026 Information Systems Division of UPJ. All rights reserved.</Link>
+      </footer>
     </div>
   )
 }
