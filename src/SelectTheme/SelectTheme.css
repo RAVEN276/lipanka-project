@@ -21,15 +21,15 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center;
     height: 100%;
     width: 100%;
-    padding: 40px 0;
+    padding: clamp(20px, 5vw, 40px) clamp(0px, 2vw, 0px);
 }
 
 .select-theme-title {
     font-family: 'Luckiest Guy', cursive;
-    font-size: 80px;
+    font-size: clamp(40px, 8vw, 80px);
     color: #0F2A3BCC;
     margin-bottom: 10px;
     text-align: center;
@@ -37,7 +37,7 @@
 
 .select-theme-subtitle {
     font-family: 'Fredoka', cursive;
-    font-size: 24px;
+    font-size: clamp(16px, 3vw, 24px);
     color: #0F2A3BCC;
     text-align: center;
 }
@@ -46,29 +46,43 @@
     width: 100%;
     padding-top: 30px;
     position: relative;
+    margin: 0 auto;
 }
 
 /* Slider container styling */
 .slick-slider {
     width: 100%;
+    margin: 0 auto;
 }
 
 .slick-list {
-    margin: 0 10px;
+    margin: 0;
     padding: 10px 0;
+    overflow: hidden; /* Ubah dari visible menjadi hidden */
 }
 
 .slick-track {
     z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 20px; /* Tambahkan gap antar slide */
 }
 
 .slick-slide {
-    padding: 100px 20px;
+    padding: 100px 20px; /* Tingkatkan padding horizontal dari 15px ke 20px */
     outline: none;
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+.slick-center {
+    position: relative;
 }
 
 .slick-center .theme-card {
-    transform: scale(1.05);
+    transform: scale(1.1) translateY(-20px);
     z-index: 2;
     box-shadow: 3px 10px 32px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3);
     margin-top: -1rem;
@@ -84,17 +98,19 @@
 .theme-card {
     background: #00000040;
     border-radius: 20px;
-    margin: 20px 0 20px 0;
+    margin: 20px auto 10px auto; /* Ubah margin untuk center alignment */
     padding: 40px 10px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.9);
-    width: 290px;
-    height: 370px;
+    width: 350px !important;
+    height: 380px !important;
     display: flex !important;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-between;
     transition: all 0.3s ease;
+    min-width: 300px; /* Tambahkan min-width */
+    flex-shrink: 0; /* Mencegah card menyusut */
 }
 
 .theme-image {
@@ -111,9 +127,10 @@
     font-weight: 700;
 }
 
+
 .theme-description {
     font-family: 'Fredoka', cursive;
-    font-size: 18px;
+    font-size: 17px;
     color: #FFFFFF;
     margin: 0 16px;
 }
@@ -169,6 +186,8 @@
     width: 90px;
     height: 90px;
     z-index: 100;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 .slick-prev {
@@ -205,8 +224,163 @@
 
 .select-theme-footer-text {
     font-family: 'Fredoka', cursive;
-    font-size: 20px;
+    font-size: clamp(10px, 3vw, 20px);
     color: #0F2A3BCC;
     text-align: center;
     font-weight: 700;
+}
+
+@media (max-width: 1024px) {
+    .slick-slide {
+        padding: 80px 15px; /* Tingkatkan dari 10px ke 15px */
+    }
+    
+    .slick-track {
+        gap: 15px; /* Kurangi gap untuk layar lebih kecil */
+    }
+    
+    .theme-card {
+        width: 300px !important;
+        height: 350px !important;
+        padding: 35px 10px;
+        min-width: 280px;
+        flex-shrink: 0;
+    }
+    
+    .theme-image {
+        min-height: 18rem;
+        margin-top: -4rem;
+    }
+    
+    .theme-name {
+        font-size: 22px;
+        margin: 0 14px;
+    }
+    
+    .theme-description {
+        font-size: 15px;
+        margin: 0 14px;
+    }
+    
+    .play-button {
+        max-height: 45px;
+        padding: 10px;
+        font-size: 16px;
+    }
+    
+    .play-name {
+        font-size: 22px;
+    }
+    
+    .play-icon {
+        width: 28px;
+        height: 28px;
+        font-size: 16px;
+        padding: 3px 0px 0px 3px;
+    }
+}
+
+@media (max-width: 768px) {
+    .slick-slide {
+        padding: 60px 12px; /* Tingkatkan dari 8px ke 12px */
+    }
+    
+    .slick-track {
+        gap: 12px;
+    }
+    
+    .theme-card {
+        width: 280px !important;
+        height: 320px !important;
+        padding: 30px 8px;
+        min-width: 250px;
+        flex-shrink: 0;
+    }
+    
+    .theme-image {
+        min-height: 16rem;
+        margin-top: -3rem;
+    }
+    
+    .theme-name {
+        font-size: 20px;
+        margin: 0 12px;
+    }
+    
+    .theme-description {
+        font-size: 14px;
+        margin: 0 12px;
+    }
+    
+    .play-button {
+        max-height: 42px;
+        padding: 8px;
+        font-size: 15px;
+        margin-right: 8px;
+    }
+    
+    .play-name {
+        font-size: 20px;
+    }
+    
+    .play-icon {
+        width: 26px;
+        height: 26px;
+        font-size: 15px;
+        margin-right: 6px;
+        padding: 2px 0px 0px 3px;
+    }
+}
+
+@media (max-width: 480px) {
+    .slick-slide {
+        padding: 40px 10px; /* Tingkatkan dari 5px ke 10px */
+    }
+    
+    .slick-track {
+        gap: 10px;
+    }
+    
+    .theme-card {
+        width: 240px !important;
+        height: 280px !important;
+        padding: 25px 8px;
+        min-width: 220px;
+        flex-shrink: 0;
+    }
+    
+    .theme-image {
+        min-height: 14rem;
+        margin-top: -2.5rem;
+    }
+    
+    .theme-name {
+        font-size: 18px;
+        margin: 0 10px;
+    }
+    
+    .theme-description {
+        font-size: 13px;
+        margin: 0 10px;
+    }
+    
+    .play-button {
+        max-height: 38px;
+        padding: 6px;
+        font-size: 14px;
+        margin-right: 6px;
+    }
+    
+    .play-name {
+        font-size: 18px;
+        margin-top: 6px;
+    }
+    
+    .play-icon {
+        width: 24px;
+        height: 24px;
+        font-size: 14px;
+        margin-right: 5px;
+        padding: 2px 0px 0px 2px;
+    }
 }

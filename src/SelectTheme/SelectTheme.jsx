@@ -55,11 +55,19 @@ function SelectTheme() {
         slidesToShow: 3,
         slidesToScroll: 1,
         centerMode: true,
-        centerPadding: '120px',
+        centerPadding: '80px', // Kurangi dari 120px
         autoplay: false,
         arrows: true,
         beforeChange: (oldIndex, newIndex) => setCurrentSlide(newIndex),
         responsive: [
+            {
+                breakpoint: 1200,
+                settings: {
+                    slidesToShow: 3,
+                    slidesToScroll: 1,
+                    centerPadding: '60px', 
+                }
+            },
             {
                 breakpoint: 1024,
                 settings: {
@@ -73,9 +81,17 @@ function SelectTheme() {
                 settings: {
                     slidesToShow: 1,
                     slidesToScroll: 1,
-                    centerMode: false,
-                    arrows: false,
-                    dots: true
+                    centerMode: true,
+                    centerPadding: '80px',
+                }
+            },
+            {
+                breakpoint: 480,
+                settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
+                    centerMode: true,
+                    centerPadding: '30px',
                 }
             }
         ]
@@ -108,7 +124,7 @@ function SelectTheme() {
                     >
                         <path d="M15 18l-6-6 6-6" />
                     </svg>
-                    </button>
+                </button>
                 <h1 className="select-theme-title">SELECT YOUR THEME</h1>
                 <p className="select-theme-subtitle">Have fun playing <strong>LIPANKA</strong></p>
                 <div className="theme-options">

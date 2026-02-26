@@ -5,13 +5,34 @@ import najla from '../assets/najla.svg'
 import lintar from '../assets/lintar.svg'
 import kaila from '../assets/kaila.svg'
 import icha from '../assets/icha.svg'
+import { Link, useNavigate } from 'react-router-dom';
 
 function Credits() {
+    const navigate = useNavigate();
+
     return (
         <div className="credits-page">
             {/* Background */}
             <img src={pageBackground} alt="Background" className="page-bg" />
             <div className="credits-content">
+            <button 
+                    className="theme-back-btn"
+                    onClick={() => navigate('/select-theme')}
+                    type="button"
+                    aria-label="Kembali ke halaman utama"
+                    >
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        style={{ width: '24px', height: '24px' }}
+                    >
+                        <path d="M15 18l-6-6 6-6" />
+                    </svg>
+                </button>
                 <h1 className="credits-title">MEET THE TEAM</h1>
                 <div className="team-section">
                     <h2 className="team-title">Backend Developers</h2>
