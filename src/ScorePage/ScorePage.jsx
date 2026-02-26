@@ -37,7 +37,9 @@ const ScorePage = () => {
         if (!currentData || finalScore > currentData.score) {
           await set(userScoreRef, {
             name: user.displayName || 'Anonymous',
-            photoURL: user.photoURL || '',
+            uid: user.uid,
+            // Jangan simpan photoURL - baca real-time dari users/{uid}/photoURL
+            // Ini cara lebih baik karena photo selalu up-to-date
             score: finalScore,
             timestamp: Date.now()
           });

@@ -1,20 +1,22 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, lazy, Suspense } from 'react'
 import { Routes, Route, useLocation, useNavigate, Navigate } from 'react-router-dom'
 import { onAuthStateChanged, signInWithPopup, signOut, updateProfile } from 'firebase/auth'
 import { auth, googleProvider } from './firebase'
-import HeroPage from './HeroPage/HeroPage.jsx'
-import ThemePage from './ThemePage/ThemePage.jsx'
-import SelectTheme from './SelectTheme/SelectTheme.jsx'
-import Credits from './Credits/Credits.jsx'
-import GamePage from './GamePage/GamePage.jsx'
-import Leaderboard from './Leaderboard/Leaderboard.jsx'
-import AnswerPage from './AnswerPage/AnswerPage.jsx'
-import ScorePage from './ScorePage/ScorePage.jsx'
 import LoadingScreen from './Components/LoadingScreen/LoadingScreen.jsx'
 import Notification from './Components/Notification/Notification.jsx'
-import Profile from './Profile/Profile.jsx'
-import EditProfile from './EditProfile/EditProfile.jsx'
-import SignIn from './SignIn/SignIn.jsx'
+
+// Lazy load page components for better code splitting
+const HeroPage = lazy(() => import('./HeroPage/HeroPage.jsx'))
+const ThemePage = lazy(() => import('./ThemePage/ThemePage.jsx'))
+const SelectTheme = lazy(() => import('./SelectTheme/SelectTheme.jsx'))
+const Credits = lazy(() => import('./Credits/Credits.jsx'))
+const GamePage = lazy(() => import('./GamePage/GamePage.jsx'))
+const Leaderboard = lazy(() => import('./Leaderboard/Leaderboard.jsx'))
+const AnswerPage = lazy(() => import('./AnswerPage/AnswerPage.jsx'))
+const ScorePage = lazy(() => import('./ScorePage/ScorePage.jsx'))
+const Profile = lazy(() => import('./Profile/Profile.jsx'))
+const EditProfile = lazy(() => import('./EditProfile/EditProfile.jsx'))
+const SignIn = lazy(() => import('./SignIn/SignIn.jsx'))
 
 function App() {
   const location = useLocation()
@@ -42,10 +44,8 @@ function App() {
   // Handle Route Transitions
   useEffect(() => {
     if (location.pathname !== displayLocation.pathname) {
-      setLoading(true)
-      
-      // Wait for exit animation or just a delay
       const transitionTimer = setTimeout(() => {
+        setLoading(true)
         setDisplayLocation(location)
         
         // Wait for enter animation
@@ -87,21 +87,19 @@ function App() {
     }
   }
 
-  const handleUpdateProfile = async (updatedData) => {
+    const handleUpdateProfile = async (updatedData) => {
       if (!user) return
-      // Firebase update is handled inside EditProfile via ref, but we update display name in Auth
-      // Actually EditProfile props are (user, onSave, onCancel)
+      // Update displayName only; photoURL is stored in Realtime Database
       try {
-        await updateProfile(user, {
-            displayName: updatedData.displayName,
-            photoURL: updatedData.photoURL
-        })
-        setUser({...user, ...updatedData})
-        navigate(-1)
+      await updateProfile(user, {
+        displayName: updatedData.displayName
+      })
+      setUser({ ...user, displayName: updatedData.displayName })
+      navigate(-1)
       } catch (e) {
-          console.error("Update profile failed", e)
+        console.error("Update profile failed", e)
       }
-  }
+    }
 
   if (authLoading) {
     return <LoadingScreen />
@@ -113,32 +111,34 @@ function App() {
         <LoadingScreen />
       )}
       
-      <Routes location={displayLocation}>
-        <Route path="/" element={<HeroPage />} />
-        <Route path="/select-theme" element={<SelectTheme />} />
-        <Route path="/theme/:themeName" element={<ThemePage />} />
-        <Route path="/credits" element={<Credits />} />
-        <Route path="/game/:themeName" element={<GamePage />} />
-        <Route path="/leaderboard" element={<Leaderboard />} />
-        <Route path="/answer" element={<AnswerPage />} />
-        <Route path="/score" element={<ScorePage />} />
-        
-        {/* Protected Routes */}
-        <Route 
-          path="/profile" 
-          element={user ? <Profile user={user} onLogout={handleSignOut} onEdit={() => navigate('/edit-profile')} /> : <Navigate to="/signin" replace />} 
-        />
-        <Route 
-          path="/edit-profile" 
-          element={user ? <EditProfile user={user} onSave={handleUpdateProfile} onCancel={() => navigate(-1)} /> : <Navigate to="/signin" replace />} 
-        />
-        <Route 
-          path="/signin" 
-          element={!user ? <SignIn onSignIn={handleSignIn} /> : <Navigate to="/profile" replace />} 
-        />
-        
-        <Route path="*" element={<HeroPage />} />
-      </Routes>
+      <Suspense fallback={<LoadingScreen />}>
+        <Routes location={displayLocation}>
+          <Route path="/" element={<HeroPage user={user} />} />
+          <Route path="/select-theme" element={<SelectTheme />} />
+          <Route path="/theme/:themeName" element={<ThemePage />} />
+          <Route path="/credits" element={<Credits />} />
+          <Route path="/game/:themeName" element={<GamePage />} />
+          <Route path="/leaderboard" element={<Leaderboard />} />
+          <Route path="/answer" element={<AnswerPage />} />
+          <Route path="/score" element={<ScorePage />} />
+          
+          {/* Protected Routes */}
+          <Route 
+            path="/profile" 
+            element={user ? <Profile user={user} onLogout={handleSignOut} onEdit={() => navigate('/edit-profile')} /> : <Navigate to="/signin" replace />} 
+          />
+          <Route 
+            path="/edit-profile" 
+            element={user ? <EditProfile user={user} onSave={handleUpdateProfile} onCancel={() => navigate(-1)} /> : <Navigate to="/signin" replace />} 
+          />
+          <Route 
+            path="/signin" 
+            element={!user ? <SignIn onSignIn={handleSignIn} /> : <Navigate to="/profile" replace />} 
+          />
+          
+          <Route path="*" element={<HeroPage user={user} />} />
+        </Routes>
+      </Suspense>
 
       <Notification 
         message={notification.message}

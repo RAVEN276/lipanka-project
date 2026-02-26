@@ -1,14 +1,14 @@
 import { useNavigate } from 'react-router-dom'
-import { auth } from '../firebase'
+import { useUserPhoto } from '../hooks/useUserPhoto'
 import GlassCard from '../Components/GlassCard/GlassCard'
 import './HeroPage.css'
 import heroBackground from '../assets/hero-background.svg'
 import kartuIcon from '../assets/Kartu.svg'
 import pialaIcon from '../assets/Piala.svg'
 
-function HeroPage() {
+function HeroPage({ user }) {
   const navigate = useNavigate()
-  const user = auth.currentUser 
+  const livePhotoURL = useUserPhoto(user?.uid, user?.photoURL) 
   
   const handleProfileClick = () => {
     // If user exists, go to profile, otherwise handled by App protection or direct navigation
@@ -28,9 +28,9 @@ function HeroPage() {
           </button>
           
           <button className="icon-btn profile-btn" aria-label="Profile" onClick={handleProfileClick}>
-            {user?.photoURL ? (
+            {livePhotoURL ? (
               <img 
-                src={user.photoURL} 
+                src={livePhotoURL} 
                 alt={user.displayName} 
                 className="profile-img" 
                 referrerPolicy="no-referrer"

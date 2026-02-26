@@ -32,9 +32,9 @@ function EditProfile({ user, onSave, onCancel }) {
     }
 
     // 2. Update displayName ke Firebase Auth
-    // PhotoURL di object ini akan diupdate di komponen parent juga
+    // Photo disimpan di Realtime Database untuk dibaca real-time
     console.log("Updating auth profile...");
-    onSave({ displayName: username, photoURL: photoURL });
+    onSave({ displayName: username });
   }
 
   const handleFileChange = (e) => {

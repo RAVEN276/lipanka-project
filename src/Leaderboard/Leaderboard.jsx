@@ -3,8 +3,65 @@ import { useNavigate } from 'react-router-dom';
 import PageBackground from '../Components/PageBackground/PageBackground';
 import { database, auth } from '../firebase';
 import { ref, onValue } from 'firebase/database';
+import { useUserPhoto } from '../hooks/useUserPhoto';
 import pialaIcon from '../assets/Piala.svg';
 import './Leaderboard.css';
+
+// Component untuk Top Player dengan live photo
+const TopPlayerCard = ({ player, rank }) => {
+  const livePhoto = useUserPhoto(player?.uid, player?.photoURL);
+  const getAvatar = (name) => `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0D8ABC&color=fff`;
+
+  if (!player) return <div className={`top-player rank-${rank}`} style={{ opacity: 0 }}></div>;
+
+  let rankClass = '';
+  if (rank === 1) rankClass = 'gold';
+  else if (rank === 2) rankClass = 'silver';
+  else if (rank === 3) rankClass = 'bronze';
+
+  return (
+    <div className={`top-player rank-${rank}`}>
+      {rank === 1 && <div className="crown-icon">👑</div>}
+      <div className={`avatar-wrapper ${rankClass}`}>
+        <img 
+          src={livePhoto || player.photoURL || getAvatar(player.name)} 
+          alt={player.name} 
+          className="avatar"
+          onError={(e) => { e.target.onerror = null; e.target.src = getAvatar(player.name); }}
+        />
+        <div className={`rank-badge ${rankClass}`}>
+          {rank}
+        </div>
+      </div>
+      <div className={`player-card ${rank === 1 ? 'highlight' : ''}`}>
+        <div className="player-name">{player.name}</div>
+        <div className="player-score">{player.score}</div>
+      </div>
+    </div>
+  );
+};
+
+// Component untuk Runner Up dengan live photo
+const RunnerUpPlayer = ({ player, index }) => {
+  const livePhoto = useUserPhoto(player?.uid, player?.photoURL);
+  const getAvatar = (name) => `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0D8ABC&color=fff`;
+
+  return (
+    <div className="runner-up-item">
+      <div className="rank-number">{index + 4}</div>
+      <img 
+        src={livePhoto || player.photoURL || getAvatar(player.name)} 
+        alt={player.name} 
+        className="mini-avatar"
+        onError={(e) => { e.target.onerror = null; e.target.src = getAvatar(player.name); }}
+      />
+      <div className="runner-info">
+        <span className="runner-name">{player.name}</span>
+        <span className="runner-score">{player.score} Pts</span>
+      </div>
+    </div>
+  );
+};
 
 const Leaderboard = () => {
   const navigate = useNavigate();
@@ -53,47 +110,6 @@ const Leaderboard = () => {
   // Runners Up (Rank 4+)
   const runnersUp = leaderboardData.slice(3);
 
-  const handleProfileClick = () => {
-    navigate('/profile');
-  };
-
-  const renderTopPlayer = (player, rank) => {
-    // If no player for this rank position, return empty invisible div to maintain layout spacing
-    if (!player) return <div key={`empty-${rank}`} className={`top-player rank-${rank}`} style={{ opacity: 0 }}></div>;
-
-    let rankClass = '';
-    
-    // Assign specific classes which control colors in CSS
-    if (rank === 1) rankClass = 'gold';
-    else if (rank === 2) rankClass = 'silver';
-    else if (rank === 3) rankClass = 'bronze';
-
-    return (
-      <div key={player.uid} className={`top-player rank-${rank}`}>
-        {rank === 1 && (
-          <div className="crown-icon">👑</div>
-        )}
-        
-        <div className={`avatar-wrapper ${rankClass}`}>
-          <img 
-            src={player.photoURL || getAvatar(player.name)} 
-            alt={player.name} 
-            className="avatar"
-            onError={(e) => { e.target.onerror = null; e.target.src = getAvatar(player.name); }}
-          />
-          <div className={`rank-badge ${rankClass}`}>
-            {rank}
-          </div>
-        </div>
-        
-        <div className={`player-card ${rank === 1 ? 'highlight' : ''}`}>
-          <div className="player-name">{player.name}</div>
-          <div className="player-score">{player.score}</div>
-        </div>
-      </div>
-    );
-  };
-
   return (
     <PageBackground>
       {/* Top Bar - Header for Profile/Leaderboard icons */}
@@ -113,39 +129,27 @@ const Leaderboard = () => {
       <div className="leaderboard-content">
         <h1 className="leaderboard-title">LEADERBOARD</h1>
 
-      {loading ? (
-        <div className="loading-text">Memuat Data...</div>
-      ) : leaderboardData.length === 0 ? (
-        <div className="empty-text">
-          Belum ada skor hari ini.<br/>Jadilah yang pertama!
-        </div>
-      ) : (
-        <>
-          <div className="top-three">
-             {/* Render Order for Podium: Rank 2 (Left), Rank 1 (Center), Rank 3 (Right) */}
-             {renderTopPlayer(topPlayers[1], 2)}
-             {renderTopPlayer(topPlayers[0], 1)}
-             {renderTopPlayer(topPlayers[2], 3)}
+        {loading ? (
+          <div className="loading-text">Memuat Data...</div>
+        ) : leaderboardData.length === 0 ? (
+          <div className="empty-text">
+            Belum ada skor hari ini.<br/>Jadilah yang pertama!
           </div>
+        ) : (
+          <>
+            <div className="top-three">
+              {/* Render Order for Podium: Rank 2 (Left), Rank 1 (Center), Rank 3 (Right) */}
+              <TopPlayerCard player={topPlayers[1]} rank={2} />
+              <TopPlayerCard player={topPlayers[0]} rank={1} />
+              <TopPlayerCard player={topPlayers[2]} rank={3} />
+            </div>
 
             {/* Runners Up List */}
             {runnersUp.length > 0 && (
               <div className="runners-up-container">
                 <div className="runners-up-list">
                   {runnersUp.map((player, index) => (
-                    <div key={player.uid || index} className="runner-up-item">
-                      <div className="rank-number">{index + 4}</div>
-                      <img 
-                        src={player.photoURL || getAvatar(player.name)} 
-                        alt={player.name} 
-                        className="mini-avatar"
-                        onError={(e) => { e.target.onerror = null; e.target.src = getAvatar(player.name); }}
-                      />
-                      <div className="runner-info">
-                        <span className="runner-name">{player.name}</span>
-                        <span className="runner-score">{player.score} Pts</span>
-                      </div>
-                    </div>
+                    <RunnerUpPlayer key={player.uid} player={player} index={index} />
                   ))}
                 </div>
               </div>

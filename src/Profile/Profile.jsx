@@ -1,11 +1,13 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useUserPhoto } from '../hooks/useUserPhoto'
 import GlassCard from '../Components/GlassCard/GlassCard'
 import PageBackground from '../Components/PageBackground/PageBackground'
 import './Profile.css' 
 
 function Profile({ user, onLogout, onEdit }) {
   const navigate = useNavigate()
+  const livePhotoURL = useUserPhoto(user?.uid, user?.photoURL)
 
   if (!user) return null
 
@@ -30,7 +32,7 @@ function Profile({ user, onLogout, onEdit }) {
         <GlassCard className="profile-card">
           <div className="profile-avatar-container">
             <img 
-              src={user.photoURL} 
+              src={livePhotoURL || user.photoURL} 
               alt={user.displayName} 
               className="profile-avatar" 
               referrerPolicy="no-referrer"
