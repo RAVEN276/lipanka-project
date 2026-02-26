@@ -14,7 +14,7 @@ const AnswerPage = () => {
       
       <div className="answer-header">
         {/* Tombol kembali ke ScorePage */}
-        <button className="back-arrow-btn" onClick={() => navigate(-1)}>←</button>
+        <button className="back-arrow-btn" onClick={() => navigate(-1)}><span>&#10094;</span></button>
         <h1 className="answer-title-text">Hasil Jawaban</h1>
       </div>
 

@@ -73,15 +73,14 @@ function ThemePage() {
     <PageBackground bgImage={kulinerBg}>
       <div className="theme-page">
         {/* Back Button */}
-        <button 
-          className="back-btn" 
-          aria-label="Back" 
+        <div 
+          className="theme-back-button" 
           onClick={() => navigate('/select-theme')}
         >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="15 18 9 12 15 6"></polyline>
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15 19l-7-7 7-7" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
-        </button>
+        </div>
 
         {/* Main Theme Content */}
         <div className="theme-container">

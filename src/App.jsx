@@ -73,7 +73,10 @@ function App() {
   const handleSignIn = async () => {
     try {
       const result = await signInWithPopup(auth, googleProvider)
-      showNotification(`Selamat datang, ${result.user.displayName}!`)
+      // Notification will show after sign in
+      showNotification(`Berhasil masuk sebagai ${result.user.displayName}`)
+      // Explicit navigation to ensure redirection happens if the route doesn't automatically redirect
+      navigate('/')
     } catch (error) {
       console.error("Error signing in: ", error)
       alert("Failed to sign in. Please try again.")

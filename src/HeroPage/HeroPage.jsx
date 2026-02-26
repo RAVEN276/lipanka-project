@@ -5,6 +5,7 @@ import './HeroPage.css'
 import heroBackground from '../assets/hero-background.svg'
 import kartuIcon from '../assets/Kartu.svg'
 import pialaIcon from '../assets/Piala.svg'
+import defaultAvatar from '../assets/default-avatar.svg'
 
 function HeroPage({ user }) {
   const navigate = useNavigate()
@@ -39,19 +40,12 @@ function HeroPage({ user }) {
           </button>
           
           <button className="icon-btn profile-btn" aria-label="Profile" onClick={handleProfileClick}>
-            {livePhotoURL ? (
-              <img 
-                src={livePhotoURL} 
-                alt={user.displayName} 
-                className="profile-img" 
-                referrerPolicy="no-referrer"
-              />
-            ) : (
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="profile-icon-default">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                <circle cx="12" cy="7" r="4"></circle>
-              </svg>
-            )}
+            <img 
+              src={livePhotoURL || user?.photoURL || defaultAvatar} 
+              alt={user?.displayName || "Profile"} 
+              className="profile-img" 
+              referrerPolicy="no-referrer"
+            />
           </button>
         </div>
       </div>
