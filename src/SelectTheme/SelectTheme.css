@@ -27,39 +27,36 @@
     padding: 40px 0;
 }
 
-/* Back Button Style (Same as Leaderboard/Profile) */
-.back-btn {
+/* Select Theme Back Button - Matching SignIn/Leaderboard/Profile Back Button */
+.select-theme-back-button {
   position: absolute;
-  top: 24px;
-  left: 32px;
-  z-index: 20;
-
-  width: 44px;
-  height: 44px;
+  top: 40px;
+  left: 40px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.15);
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   cursor: pointer;
-  pointer-events: auto;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  transition: all 0.3s ease;
+  z-index: 20;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-.back-btn:hover {
-  background: rgba(0, 0, 0, 0.7);
-  transform: scale(1.05);
+.select-theme-back-button:hover {
+  background: rgba(0, 0, 0, 0.6);
+  transform: scale(1.1);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
-.back-btn svg {
-  width: 24px;
-  height: 24px;
-  color: white;
-  stroke-width: 3px;
-  margin-right: 2px;
+.select-theme-back-button svg {
+  margin-right: 2px; /* Visual adjustment */
 }
 
 .select-theme-title {

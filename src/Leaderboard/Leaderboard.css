@@ -22,7 +22,7 @@
   pointer-events: auto;
 }
 
-.icon-btn {
+.leaderboard-icon-btn {
   pointer-events: auto;
   background: white; /* Glassy white button */
   border: 2px solid rgba(255, 255, 255, 0.5);
@@ -38,7 +38,7 @@
   height: 52px;
 }
 
-.icon-btn:hover {
+.leaderboard-icon-btn:hover {
   transform: scale(1.1);
   box-shadow: 0 6px 16px rgba(0,0,0,0.15);
   filter: brightness(1.1); /* Just brighten the existing color */
@@ -405,5 +405,35 @@
   color: #0F2A3B;
   font-weight: bold;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+
+/* Leaderboard Back Button - Matching SignIn Back Button */
+.leaderboard-back-button {
+  cursor: pointer;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  pointer-events: auto; /* Enable clicks as parent has pointer-events: none */
+}
+
+.leaderboard-back-button:hover {
+  background: rgba(0, 0, 0, 0.6);
+  transform: scale(1.1);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.leaderboard-back-button svg {
+  margin-right: 2px; /* Visual adjustment */
 }
 

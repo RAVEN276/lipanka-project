@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react'
 import GlassCard from '../Components/GlassCard/GlassCard'
 import PageBackground from '../Components/PageBackground/PageBackground'
+import defaultAvatar from '../assets/default-avatar.svg'
 import { database } from '../firebase'
 import { ref, set } from "firebase/database"
 import './EditProfile.css'
@@ -67,7 +68,7 @@ function EditProfile({ user, onSave, onCancel }) {
           <div className="edit-photo-section">
             <div className="photo-wrapper">
                <img 
-                src={photoURL || "https://via.placeholder.com/150"} 
+                src={photoURL || defaultAvatar} 
                 alt="Profile" 
                 className="edit-profile-avatar" 
                 referrerPolicy="no-referrer"

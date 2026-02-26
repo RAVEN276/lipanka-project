@@ -20,6 +20,11 @@ const ScorePage = () => {
 
   // Efek Confetti & Animasi 
   useEffect(() => {
+    // Play fireworks sound
+    const audio = new Audio('/audio/fireworks.mp3');
+    audio.volume = 0.6; 
+    audio.play().catch(e => console.log("Audio play failed", e));
+
     confetti({
       particleCount: 150,
       spread: 70,
@@ -115,6 +120,16 @@ const ScorePage = () => {
 
   return (
     <div className="score-page-container" style={{ backgroundImage: `url(${heroBg})` }}>
+      {/* Back Button */}
+      <div 
+        className="score-back-button" 
+        onClick={() => navigate(`/theme/${theme}`)}
+      >
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15 19l-7-7 7-7" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </div>
+      
       <div className="score-overlay">
         <GlassCard className="score-main-card">
           <h1 className="score-status-title">PERMAINAN SELESAI</h1>
@@ -151,6 +166,14 @@ const ScorePage = () => {
               onClick={() => navigate(`/game/${theme}`)}
             >
               Mulai Lagi
+            </button>
+
+             {/* 4. Tombol Home - Kembali ke HeroPage */}
+             <button 
+              className="score-menu-item" 
+              onClick={() => navigate('/')}
+            >
+              Home
             </button>
           </div>
         </GlassCard>

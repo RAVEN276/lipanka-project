@@ -1,11 +1,20 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 import GlassCard from '../Components/GlassCard/GlassCard'
 import PageBackground from '../Components/PageBackground/PageBackground'
 import './SignIn.css'
 
 function SignIn({ onSignIn }) {
+  const navigate = useNavigate();
+
   return (
     <PageBackground>
+      <div className="signin-back-button" onClick={() => navigate('/')}>
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15 19l-7-7 7-7" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </div>
+
       <div className="signin-container">
         <GlassCard className="signin-card">
           <h2 className="signin-title">

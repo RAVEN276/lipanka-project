@@ -2,6 +2,7 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import GlassCard from '../Components/GlassCard/GlassCard'
 import PageBackground from '../Components/PageBackground/PageBackground'
+import defaultAvatar from '../assets/default-avatar.svg'
 import './Profile.css' 
 
 function Profile({ user, onLogout, onEdit }) {
@@ -13,15 +14,14 @@ function Profile({ user, onLogout, onEdit }) {
     <PageBackground>
       {/* Top Bar with Back Button */}
       <div className="profile-topbar">
-        <button 
-          className="back-btn" 
-          aria-label="Back" 
+        <div 
+          className="profile-back-button" 
           onClick={() => navigate(-1)}
         >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="15 18 9 12 15 6"></polyline>
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15 19l-7-7 7-7" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
-        </button>
+        </div>
       </div>
 
       <div className="profile-page-container">
@@ -30,8 +30,8 @@ function Profile({ user, onLogout, onEdit }) {
         <GlassCard className="profile-card">
           <div className="profile-avatar-container">
             <img 
-              src={user.photoURL} 
-              alt={user.displayName} 
+              src={user.photoURL || defaultAvatar} 
+              alt={user.displayName || "User"} 
               className="profile-avatar" 
               referrerPolicy="no-referrer"
             />

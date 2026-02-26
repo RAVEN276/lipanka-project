@@ -5,6 +5,7 @@ import './HeroPage.css'
 import heroBackground from '../assets/hero-background.svg'
 import kartuIcon from '../assets/Kartu.svg'
 import pialaIcon from '../assets/Piala.svg'
+import defaultAvatar from '../assets/default-avatar.svg'
 
 function HeroPage() {
   const navigate = useNavigate()
@@ -12,7 +13,15 @@ function HeroPage() {
   
   const handleProfileClick = () => {
     // If user exists, go to profile, otherwise handled by App protection or direct navigation
-    navigate('/profile')
+    navigate(user ? '/profile' : '/signin')
+  }
+
+  const handlePlayClick = () => {
+    if (!user) {
+      navigate('/signin')
+    } else {
+      navigate('/select-theme')
+    }
   }
 
   return (
@@ -28,19 +37,12 @@ function HeroPage() {
           </button>
           
           <button className="icon-btn profile-btn" aria-label="Profile" onClick={handleProfileClick}>
-            {user?.photoURL ? (
-              <img 
-                src={user.photoURL} 
-                alt={user.displayName} 
-                className="profile-img" 
-                referrerPolicy="no-referrer"
-              />
-            ) : (
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="profile-icon-default">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                <circle cx="12" cy="7" r="4"></circle>
-              </svg>
-            )}
+            <img 
+              src={user?.photoURL || defaultAvatar} 
+              alt={user?.displayName || "Profile"} 
+              className="profile-img" 
+              referrerPolicy="no-referrer"
+            />
           </button>
         </div>
       </div>
@@ -55,7 +57,7 @@ function HeroPage() {
             Welcome to the Nusantara Quest!<br />
             Test your knowledge of Indonesian Culture.
             </p>
-            <GlassCard as="button" className="hero-play-btn" onClick={() => navigate('/select-theme')}>PLAY</GlassCard>
+            <GlassCard as="button" className="hero-play-btn" onClick={handlePlayClick}>PLAY</GlassCard>
       </div>
     </div>
   )
