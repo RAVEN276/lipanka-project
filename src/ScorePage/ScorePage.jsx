@@ -5,7 +5,7 @@ import './ScorePage.css';
 import heroBg from '../assets/hero-background.svg';
 import confetti from 'canvas-confetti'; 
 import { auth, database } from '../firebase';
-import { ref, runTransaction } from 'firebase/database';
+import { ref, runTransaction, set } from 'firebase/database'; // Tambahkan set
 
 const ScorePage = () => {
   const location = useLocation();
@@ -78,23 +78,60 @@ const ScorePage = () => {
       const userId = user.uid;
       const userScoreRef = ref(database, `leaderboard/${today}/${userId}`);
 
+      // Dapatkan data terbaru dari Auth (jika ada update di EditProfile)
+      // Namun hati-hati, auth.currentUser mungkin belum ter-refresh 
+      // jika tidak direload, tapi biasanya sudah cukup sinkron.
+      // Lebih aman lagi baca dari database `users/{uid}` juga, tapi
+      // auth.currentUser properti statisnya sudah diupdate di EditProfile.
+
       try {
         await runTransaction(userScoreRef, (currentData) => {
+          let currentPhoto = user.photoURL || '';
+          let currentName = user.displayName || 'Anonymous';
+
+          // Jika user belum pernah set foto di Edit Profil (photoURL Auth masih googleusercontent),
+          // pastikan kita simpan URL tersebut ke database users/{uid}/photoURL juga 
+          // agar useUserPhoto bisa membacanya nanti.
+          // (Tapi runTransaction harus murni, jadi side effect ke users/{uid} sebaiknya di luar)
+          
           if (currentData === null) {
             return {
-              name: user.displayName || 'Anonymous',
-              photoURL: user.photoURL || '',
+              name: currentName,
+              photoURL: currentPhoto,
               score: finalScore,
               timestamp: Date.now()
             };
           } else {
+            // Update skor DAN data profil (nama/foto) agar selalu fresh
+            // Prioritaskan photo terbaru dari Auth, jika Auth kosong baru pakai data lama
             return {
               ...currentData,
+              name: currentName || currentData.name, 
+              photoURL: currentPhoto || currentData.photoURL,     // Update foto
               score: (currentData.score || 0) + finalScore,
               timestamp: Date.now()
             };
           }
         });
+        
+        // --- TAMBAHAN PENTING ---
+        // Jika user belum ada data di users/{uid}/photoURL (misal baru login Google),
+        // kita simpan foto Google Auth-nya ke database users node juga.
+        // Ini supaya hook useUserPhoto bisa membacanya tanpa perlu user ke Edit Profil dulu.
+        if (user.photoURL) {
+            const userPhotoRef = ref(database, `users/${user.uid}/photoURL`);
+            // Set update, tapi kita gunakan update() atau set() di luar transaction agar tidak blocking
+            // Kita pakai update ke root users node jika perlu, tapi set ke specific path lebih aman
+            // Cek dulu apakah sudah ada? Atau timpa saja karena ini foto terbaru dari Auth
+            // Kita gunakan set saja agar pasti tersimpan.
+            set(userPhotoRef, user.photoURL).catch(err => console.log("Auto-save photo failed", err));
+            
+            // Simpan nama juga
+            const userNameRef = ref(database, `users/${user.uid}/displayName`);
+            if (user.displayName) {
+                set(userNameRef, user.displayName).catch(err => console.log("Auto-save name failed", err));
+            }
+        }
         
         console.log(`Score updated! Added ${finalScore} to previous score.`);
 

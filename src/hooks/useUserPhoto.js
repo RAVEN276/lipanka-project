@@ -26,16 +26,20 @@ export const useUserPhoto = (userId, userPhotoAuth) => {
         const dbPhoto = snapshot.val();
         if (dbPhoto) {
           // Jika ada foto di database (prioritas utama), gunakan itu
-          console.log(`Photo updated for user ${userId}`);
           setPhotoURL(dbPhoto);
         } else {
-          // Jika tidak ada di database, fallback ke Firebase Auth photo
+          // Jika tidak ada di database, tetap gunakan userPhotoAuth jika ada
+          // Tapi karena userPhotoAuth juga bisa statis dari leaderboard yang mungkin kosong,
+          // kita tidak bisa berbuat banyak selain menunggu user update profile.
           setPhotoURL(fallbackPhoto);
         }
       },
       (error) => {
-        console.warn('Error reading photo from database:', error.code, error.message);
-        // Tetap gunakan fallback
+        // PERBAIKAN: Jangan tampilkan warning jika permission denied karena user belum login
+        // Cukup silent fail dan gunakan fallback
+        if (error.code !== "PERMISSION_DENIED") {
+          console.warn('Error reading photo from database:', error.code);
+        }
         setPhotoURL(fallbackPhoto);
       }
     );

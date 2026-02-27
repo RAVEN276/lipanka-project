@@ -120,11 +120,15 @@ function EditQuestionPage() {
     setEditForm({ ...editForm, options: newOptions });
   };
 
-  const handleSvgUpload = (file) => {
+  const handleImageUpload = (file) => {
     if (!file) return;
     
-    if (file.type !== 'image/svg+xml' && !file.name.toLowerCase().endsWith('.svg')) {
-      alert('Hanya file SVG yang diperbolehkan!');
+    const validTypes = ['image/svg+xml', 'image/webp'];
+    const isSvg = file.name.toLowerCase().endsWith('.svg');
+    const isWebp = file.name.toLowerCase().endsWith('.webp');
+
+    if (!validTypes.includes(file.type) && !isSvg && !isWebp) {
+      alert('Hanya file SVG dan WEBP yang diperbolehkan!');
       return;
     }
 
@@ -138,7 +142,7 @@ function EditQuestionPage() {
       // 10MB = 10 * 1024 * 1024 bytes = 10485760 bytes
       // Base64 encoding increases size by ~33%, so we check length
       if (base64String.length > 10000000) {
-        alert('Ukuran file SVG terlalu besar! Maksimal ukuran file yang diizinkan adalah sekitar 7MB.');
+        alert('Ukuran file terlalu besar! Maksimal ukuran file yang diizinkan adalah sekitar 7MB.');
         setUploading(false);
         return;
       }
@@ -154,7 +158,7 @@ function EditQuestionPage() {
     };
 
     reader.onerror = () => {
-      alert('Gagal membaca file SVG');
+      alert('Gagal membaca file');
       setUploading(false);
     };
 
@@ -244,17 +248,17 @@ function EditQuestionPage() {
                       </label>
 
                       <label>
-                        Upload SVG (Disimpan ke Database)
+                        Upload Gambar (SVG / WEBP)
                         <div className="file-input-wrapper">
                           <input
                             type="file"
-                            accept=".svg, image/svg+xml"
-                            onChange={(e) => handleSvgUpload(e.target.files?.[0])}
+                            accept=".svg, image/svg+xml, .webp, image/webp"
+                            onChange={(e) => handleImageUpload(e.target.files?.[0])}
                             id="file-upload"
                             className="hidden-file-input"
                           />
                           <label htmlFor="file-upload" className="file-upload-btn">
-                            {uploading ? 'Memproses...' : 'Pilih File SVG'}
+                            {uploading ? 'Memproses...' : 'Pilih File'}
                           </label>
                         </div>
                       </label>

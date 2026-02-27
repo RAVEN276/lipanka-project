@@ -3,7 +3,7 @@ import GlassCard from '../Components/GlassCard/GlassCard'
 import PageBackground from '../Components/PageBackground/PageBackground'
 import defaultAvatar from '../assets/default-avatar.svg'
 import { database } from '../firebase'
-import { ref, set } from "firebase/database"
+import { ref, set, update } from "firebase/database"
 import './EditProfile.css'
 
 function EditProfile({ user, onSave, onCancel }) {
@@ -40,7 +40,31 @@ function EditProfile({ user, onSave, onCancel }) {
       console.error("GAGAL menyimpan displayName ke Realtime Database:", e);
     }
 
-    // 3. Update displayName ke Firebase Auth
+    // 3. Update data di Leaderboard hari ini (jika user sudah bermain)
+    try {
+      // Pastikan date string sesuai format yang digunakan di Leaderboard.jsx
+      const today = new Date().toISOString().split('T')[0];
+      const leaderboardRef = ref(database, `leaderboard/${today}/${user.uid}`);
+      
+      // Kita hanya update name dan photoURL, tanpa menyentuh score
+      // Gunakan 'update' agar tidak menghapus field lain (seperti score/timestamp)
+      const updates = {
+        name: username.trim(),
+      };
+      
+      // Hanya update foto di leaderboard jika ada foto valid
+      if (photoURL) {
+        updates.photoURL = photoURL;
+      }
+      
+      await update(leaderboardRef, updates);
+      console.log("Leaderboard updated with new profile data");
+    } catch (e) {
+      // Error di sini tidak fatal, karena leaderboard akan update otomatis saat main game
+      console.warn("Gagal update data di leaderboard (mungkin user belum ada di leaderboard):", e);
+    }
+
+    // 4. Update displayName ke Firebase Auth
     // Photo dan nama dibaca real-time dari Realtime Database
     console.log("Updating auth profile...");
     onSave({ displayName: username });
