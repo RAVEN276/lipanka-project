@@ -21,6 +21,15 @@
   flex-direction: column;
   position: relative;
   z-index: 1;
+
+  /* Hide scrollbar for Firefox, IE and Edge */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.admin-main-content::-webkit-scrollbar {
+  display: none;
 }
 
 .admin-content-header {
@@ -209,6 +218,15 @@
   background: rgba(0, 0, 0, 0.2); /* Darker, unified background */
   box-shadow: none; /* Removed inner shadow */
   border: none; /* Removed border */
+  
+  /* Hide scrollbar for Firefox, IE and Edge */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.questions-table-wrapper::-webkit-scrollbar {
+  display: none;
 }
 
 .questions-table {
