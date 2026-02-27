@@ -22,26 +22,9 @@ const QuestionCard = ({ q, index, theme, onEdit, onDelete }) => {
         return;
       }
 
-      if (!q.image) {
-        if (active) {
-          setImgSrc(null);
-          setLoadingImg(false);
-        }
-        return;
-      }
-
-      try {
-        // Try to import local asset
-        // Note: This relies on Vite's dynamic import analysis
-        const imageModule = await import(`../assets/soal/${theme}/${q.image}.svg`);
-        if (active) {
-          setImgSrc(imageModule.default);
-        }
-      } catch (err) {
-        console.warn(`Failed to load image for ${q.image}`, err);
-        if (active) setImgSrc(null);
-      } finally {
-        if (active) setLoadingImg(false);
+      if (active) {
+        setImgSrc(null);
+        setLoadingImg(false);
       }
     };
 

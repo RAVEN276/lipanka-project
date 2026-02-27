@@ -95,43 +95,12 @@ function GamePage() {
 
         const questionsWithImages = await Promise.all(
           shuffledQuestions.map(async (q) => {
-            const imageName = String(q.image || '').replace(/\.svg$/i, '')
             const shuffledOpts = shuffleArray(q.options || [])
 
-            if (q.imageUrl) {
-              return {
-                ...q,
-                image: imageName,
-                imageUrl: q.imageUrl,
-                shuffledOptions: shuffledOpts
-              }
-            }
-
-            if (!imageName) {
-              return {
-                ...q,
-                image: imageName,
-                imageUrl: null,
-                shuffledOptions: shuffledOpts
-              }
-            }
-
-            try {
-              const img = await import(`../assets/soal/${theme}/${imageName}.svg`)
-              return {
-                ...q,
-                image: imageName,
-                imageUrl: img.default,
-                shuffledOptions: shuffledOpts
-              }
-            } catch (error) {
-              console.error(`Failed to load image for ${q.correctAnswer}:`, error)
-              return {
-                ...q,
-                image: imageName,
-                imageUrl: null,
-                shuffledOptions: shuffledOpts
-              }
+            return {
+              ...q,
+              imageUrl: q.imageUrl || null,
+              shuffledOptions: shuffledOpts
             }
           })
         )

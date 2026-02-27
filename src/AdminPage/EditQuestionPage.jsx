@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { auth, database, storage } from '../firebase';
+import { auth, database } from '../firebase';
 import { ref, get, set } from 'firebase/database';
-import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
 import PageBackground from '../Components/PageBackground/PageBackground';
 import GlassCard from '../Components/GlassCard/GlassCard';
 import Sidebar from '../Components/Sidebar/Sidebar';
@@ -121,33 +120,50 @@ function EditQuestionPage() {
     setEditForm({ ...editForm, options: newOptions });
   };
 
-  const handleImageUpload = async (file) => {
+  const handleSvgUpload = (file) => {
     if (!file) return;
-    setUploading(true);
-    try {
-      const path = `questions/${theme}/${Date.now()}_${file.name}`;
-      const fileRef = storageRef(storage, path);
-      await uploadBytes(fileRef, file);
-      const url = await getDownloadURL(fileRef);
-      const nameWithoutExt = file.name.replace(/\.[^/.]+$/, '');
+    
+    if (file.type !== 'image/svg+xml' && !file.name.toLowerCase().endsWith('.svg')) {
+      alert('Hanya file SVG yang diperbolehkan!');
+      return;
+    }
 
+    setUploading(true);
+    const reader = new FileReader();
+    
+    reader.onload = (e) => {
+      const base64String = e.target.result;
+      
+      // Firebase Realtime Database has a 10MB limit per string
+      // 10MB = 10 * 1024 * 1024 bytes = 10485760 bytes
+      // Base64 encoding increases size by ~33%, so we check length
+      if (base64String.length > 10000000) {
+        alert('Ukuran file SVG terlalu besar! Maksimal ukuran file yang diizinkan adalah sekitar 7MB.');
+        setUploading(false);
+        return;
+      }
+
+      const nameWithoutExt = file.name.replace(/\.[^/.]+$/, '');
+      
       setEditForm((prev) => ({
         ...prev,
-        imageUrl: url,
+        imageUrl: base64String,
         image: prev.image || nameWithoutExt
       }));
-    } catch (error) {
-      console.error('Error uploading image:', error);
-      alert('Failed to upload image: ' + error.message);
-    } finally {
       setUploading(false);
-    }
+    };
+
+    reader.onerror = () => {
+      alert('Gagal membaca file SVG');
+      setUploading(false);
+    };
+
+    reader.readAsDataURL(file);
   };
 
   const handleSave = async () => {
     setSaving(true);
     try {
-      const nextQuestions = [...questions];
       const payload = {
         ...editForm,
         options: Array.isArray(editForm.options) ? editForm.options : ['', '', '', '', ''] 
@@ -228,31 +244,28 @@ function EditQuestionPage() {
                       </label>
 
                       <label>
-                        Upload Image (optional)
+                        Upload SVG (Disimpan ke Database)
                         <div className="file-input-wrapper">
                           <input
                             type="file"
-                            accept="image/*"
-                            onChange={(e) => handleImageUpload(e.target.files?.[0])}
+                            accept=".svg, image/svg+xml"
+                            onChange={(e) => handleSvgUpload(e.target.files?.[0])}
                             id="file-upload"
                             className="hidden-file-input"
                           />
                           <label htmlFor="file-upload" className="file-upload-btn">
-                            {uploading ? 'Uploading...' : 'Choose File'}
+                            {uploading ? 'Memproses...' : 'Pilih File SVG'}
                           </label>
-                          {editForm.imageUrl && <span className="file-status">Image ready</span>}
                         </div>
                       </label>
 
                       <label>
-                        Image URL
+                        Image URL / Base64
                         <input
                           type="text"
                           value={editForm.imageUrl}
                           onChange={(e) => setEditForm({ ...editForm, imageUrl: e.target.value })}
-                          placeholder="https://..."
-                          readOnly
-                          className="readonly-input"
+                          placeholder="https://... atau data:image/svg+xml;base64,..."
                         />
                       </label>
 
