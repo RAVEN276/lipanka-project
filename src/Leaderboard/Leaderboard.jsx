@@ -31,6 +31,7 @@ const TopPlayerCard = ({ player, rank }) => {
           src={livePhoto || player.photoURL || getAvatar(displayName)} 
           alt={displayName} 
           className="avatar"
+          referrerPolicy="no-referrer"
           onError={(e) => { e.target.onerror = null; e.target.src = getAvatar(displayName); }}
         />
         <div className={`rank-badge ${rankClass}`}>
@@ -60,6 +61,7 @@ const RunnerUpPlayer = ({ player, index }) => {
         src={livePhoto || player.photoURL || getAvatar(displayName)} 
         alt={displayName} 
         className="mini-avatar"
+        referrerPolicy="no-referrer"
         onError={(e) => { e.target.onerror = null; e.target.src = getAvatar(displayName); }}
       />
       <div className="runner-info">
