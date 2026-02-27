@@ -10,6 +10,7 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { Link, useNavigate } from 'react-router-dom';
+import PageBackground from '../Components/PageBackground/PageBackground';
 
 const themes = [
     {
@@ -55,7 +56,7 @@ function SelectTheme() {
         slidesToShow: 3,
         slidesToScroll: 1,
         centerMode: true,
-        centerPadding: '80px', // Kurangi dari 120px
+        centerPadding: '80px', 
         autoplay: false,
         arrows: true,
         beforeChange: (oldIndex, newIndex) => setCurrentSlide(newIndex),
@@ -82,7 +83,7 @@ function SelectTheme() {
                     slidesToShow: 1,
                     slidesToScroll: 1,
                     centerMode: true,
-                    centerPadding: '80px',
+                    centerPadding: '40px',
                 }
             },
             {
@@ -105,7 +106,7 @@ function SelectTheme() {
     return (
         <div className="select-theme-page">
             {/* Background */}
-            <img src={pageBackground} alt="Background" className="page-bg" />
+            <PageBackground bgImage={pageBackground} />
             <div className="select-theme-content">
                 <button 
                     className="theme-back-btn"
@@ -148,9 +149,6 @@ function SelectTheme() {
                     ))}
                     </Slider>
                 </div>
-                <footer className="select-theme-footer">
-                    <Link to="/credits" className="select-theme-footer-text">©2026 Information Systems Division of UPJ. All rights reserved.</Link>
-                </footer>
             </div>
         </div>
     )

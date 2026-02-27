@@ -1,14 +1,15 @@
 .select-theme-page {
     position: relative;
     width: 100%;
-    height: 100vh;
+    min-height: 100vh;
     overflow: hidden;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
 }
 
-.page-bg {
+.page-background-img {
     position: absolute;
     inset: 0;
     width: 100%;
@@ -22,6 +23,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    flex: 1;
     height: 100%;
     width: 100%;
     padding: clamp(20px, 5vw, 40px) clamp(0px, 2vw, 0px);
@@ -33,6 +35,8 @@
     color: #0F2A3BCC;
     margin-bottom: 10px;
     text-align: center;
+    position: relative;
+    z-index: 1;
 }
 
 .select-theme-subtitle {
@@ -40,16 +44,17 @@
     font-size: clamp(16px, 3vw, 24px);
     color: #0F2A3BCC;
     text-align: center;
+    position: relative;
+    z-index: 1;
 }
 
 .theme-options {
     width: 100%;
-    padding-top: 30px;
+    padding-top: 0px;
     position: relative;
     margin: 0 auto;
 }
 
-/* Slider container styling */
 .slick-slider {
     width: 100%;
     margin: 0 auto;
@@ -58,18 +63,17 @@
 .slick-list {
     margin: 0;
     padding: 10px 0;
-    overflow: hidden; /* Ubah dari visible menjadi hidden */
+    overflow: hidden;
 }
 
 .slick-track {
     z-index: 1;
     display: flex;
     align-items: center;
-    gap: 20px; /* Tambahkan gap antar slide */
 }
 
 .slick-slide {
-    padding: 100px 20px; /* Tingkatkan padding horizontal dari 15px ke 20px */
+    padding: 80px 0 30px 0;
     outline: none;
     display: flex !important;
     justify-content: center;
@@ -94,11 +98,10 @@
     z-index: 1;
 }
 
-/* Theme card styling */
 .theme-card {
     background: #00000040;
     border-radius: 20px;
-    margin: 20px auto 10px auto; /* Ubah margin untuk center alignment */
+    margin: 20px auto 10px auto;
     padding: 40px 10px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(10px);
@@ -109,8 +112,8 @@
     flex-direction: column;
     justify-content: space-between;
     transition: all 0.3s ease;
-    min-width: 300px; /* Tambahkan min-width */
-    flex-shrink: 0; /* Mencegah card menyusut */
+    min-width: 300px; 
+    flex-shrink: 0;
 }
 
 .theme-image {
@@ -222,28 +225,20 @@
     z-index: 1;
 }
 
-.select-theme-footer-text {
-    font-family: 'Fredoka', cursive;
-    font-size: clamp(10px, 3vw, 20px);
-    color: #0F2A3BCC;
-    text-align: center;
-    font-weight: 700;
-}
-
 @media (max-width: 1024px) {
     .slick-slide {
-        padding: 80px 15px; /* Tingkatkan dari 10px ke 15px */
+        padding: 80px 0;
     }
     
     .slick-track {
-        gap: 15px; /* Kurangi gap untuk layar lebih kecil */
+        gap: 15px;
     }
     
     .theme-card {
         width: 300px !important;
-        height: 350px !important;
+        height: 330px !important;
         padding: 35px 10px;
-        min-width: 280px;
+        min-width: 300px;
         flex-shrink: 0;
     }
     
@@ -253,7 +248,7 @@
     }
     
     .theme-name {
-        font-size: 22px;
+        font-size: 20px;
         margin: 0 14px;
     }
     
@@ -282,7 +277,7 @@
 
 @media (max-width: 768px) {
     .slick-slide {
-        padding: 60px 12px; /* Tingkatkan dari 8px ke 12px */
+        padding: 60px 12px;
     }
     
     .slick-track {
@@ -334,7 +329,7 @@
 
 @media (max-width: 480px) {
     .slick-slide {
-        padding: 40px 10px; /* Tingkatkan dari 5px ke 10px */
+        padding: 40px 10px;
     }
     
     .slick-track {
