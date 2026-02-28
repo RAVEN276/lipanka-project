@@ -4,6 +4,7 @@ import { ref, get } from 'firebase/database'
 import PageBackground from '../Components/PageBackground/PageBackground'
 import GlassCard from '../Components/GlassCard/GlassCard'
 import TimerBar from '../Components/TimerBar/TimerBar'
+import LoadingScreen from '../Components/LoadingScreen/LoadingScreen'
 import { database } from '../firebase'
 import { shuffleArray } from '../utils/shuffleArray'
 import './GamePage.css'
@@ -54,31 +55,39 @@ function GamePage() {
 
   // Load questions based on theme from Realtime Database
   useEffect(() => {
+    let isMounted = true
+
     const loadQuestions = async () => {
       const theme = themeName || 'daerah'
-      setLoadingQuestions(true)
-      setLoadError('')
-      setGameStarted(false)
+      
+      if (isMounted) {
+        setLoadingQuestions(true)
+        setLoadError('')
+        setGameStarted(false)
 
-      // Reset per-game state when theme changes
-      setCurrentQuestionIndex(0)
-      setSelectedAnswer(null)
-      setShowResultOverlay(false)
-      setIsCorrect(false)
-      setScore(0)
-      setGameHistory([])
-      setIsTimeUp(false)
-      setTimeLeft(GAME_DURATION)
-      setTotalGameTime(GAME_DURATION)
-      setDoubleScoreActive(false)
-      setDoubleScoreUsed(false)
-      setFiftyFiftyActive(false)
-      setFiftyFiftyUsed(false)
-      setAddTimeUsed(false)
+        // Reset per-game state when theme changes
+        setQuestions([])
+        setCurrentQuestionIndex(0)
+        setSelectedAnswer(null)
+        setShowResultOverlay(false)
+        setIsCorrect(false)
+        setScore(0)
+        setGameHistory([])
+        setIsTimeUp(false)
+        setTimeLeft(GAME_DURATION)
+        setTotalGameTime(GAME_DURATION)
+        setDoubleScoreActive(false)
+        setDoubleScoreUsed(false)
+        setFiftyFiftyActive(false)
+        setFiftyFiftyUsed(false)
+        setAddTimeUsed(false)
+      }
 
       try {
         const questionsRef = ref(database, `questions/${theme}`)
         const snapshot = await get(questionsRef)
+
+        if (!isMounted) return
 
         if (!snapshot.exists()) {
           setQuestions([])
@@ -93,29 +102,82 @@ function GamePage() {
 
         const shuffledQuestions = shuffleArray(questionList)
 
+        // Pre-load all images to avoid layout shift or white screens
+        // Since images are now WebP (smaller), we can load them upfront
         const questionsWithImages = await Promise.all(
           shuffledQuestions.map(async (q) => {
             const shuffledOpts = shuffleArray(q.options || [])
 
+<<<<<<< HEAD
             return {
               ...q,
               imageUrl: q.imageUrl || null,
               shuffledOptions: shuffledOpts
+=======
+            if (q.imageUrl) {
+              return {
+                ...q,
+                image: imageName,
+                imageUrl: q.imageUrl,
+                shuffledOptions: shuffledOpts
+              }
+            }
+
+            if (!imageName) {
+              return {
+                ...q,
+                image: imageName,
+                imageUrl: null,
+                shuffledOptions: shuffledOpts
+              }
+            }
+
+            try {
+              // Try loading webp first (as requested), fallback to checking logic if needed
+              // Note: Dynamic imports only work if the file actually exists at build time
+              // The user said they converted "svg to webp", so we assume the file name base is the same but ext is .webp
+              const img = await import(`../assets/soal/${theme}/${imageName}.webp`)
+              return {
+                ...q,
+                image: imageName,
+                imageUrl: img.default,
+                shuffledOptions: shuffledOpts
+              }
+            } catch (error) {
+              // Fallback or error handling if webp not found
+              console.error(`Failed to load image for ${q.correctAnswer} (trying .webp):`, error)
+              return {
+                ...q,
+                image: imageName,
+                imageUrl: null,
+                shuffledOptions: shuffledOpts
+              }
+>>>>>>> Panji
             }
           })
         )
 
-        setQuestions(questionsWithImages)
-        setGameStarted(true)
+        if (isMounted) {
+          setQuestions(questionsWithImages)
+          setGameStarted(true)
+        }
       } catch (error) {
-        console.error('Failed to load questions:', error)
-        setLoadError('Gagal memuat soal. Coba lagi nanti.')
+        if (isMounted) {
+          console.error('Failed to load questions:', error)
+          setLoadError('Gagal memuat soal. Coba lagi nanti.')
+        }
       } finally {
-        setLoadingQuestions(false)
+        if (isMounted) {
+          setLoadingQuestions(false)
+        }
       }
     }
 
     loadQuestions()
+
+    return () => {
+      isMounted = false
+    }
   }, [themeName])
 
   // Handle background timer audio
@@ -144,7 +206,7 @@ function GamePage() {
   }, [currentQuestionIndex])
 
   useEffect(() => {
-    if (isTimeUp || showResultOverlay || isProcessing || questions.length === 0) return
+    if (loadingQuestions || isTimeUp || showResultOverlay || isProcessing || questions.length === 0) return
 
     if (timeLeft <= 0) {
       if (processingTimeOut.current) return
@@ -183,7 +245,7 @@ function GamePage() {
     }, 1000)
 
     return () => clearInterval(interval)
-  }, [timeLeft, isTimeUp, showResultOverlay, isProcessing, currentQuestionIndex, questions])
+  }, [timeLeft, isTimeUp, showResultOverlay, isProcessing, currentQuestionIndex, questions, loadingQuestions])
 
   // When question index changes, ensuring clean slate
   useEffect(() => {
@@ -339,7 +401,9 @@ function GamePage() {
   const currentQuestion = questions[currentQuestionIndex]
 
   if (loadingQuestions) {
-    return <PageBackground><div className="game-loading">Loading...</div></PageBackground>
+    // Show LoadingScreen. Duration 200 is default, we can just omit it or keep it short.
+    // If we want it to "feel" complete, 200 is fine because the loading logic waits for images now.
+    return <LoadingScreen />
   }
 
   if (loadError) {

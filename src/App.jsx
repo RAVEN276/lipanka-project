@@ -35,6 +35,7 @@ function App() {
   
   // Notification State
   const [notification, setNotification] = useState({ show: false, message: '' })
+  const [pendingNotification, setPendingNotification] = useState(null)
 
   const showNotification = (message) => {
     setNotification({ show: true, message })
@@ -61,6 +62,23 @@ function App() {
     }
   }, [location, displayLocation])
 
+  // Show pending notification when loading finishes
+  useEffect(() => {
+    // Only show notification if:
+    // 1. Not loading
+    // 2. Pending notification exists
+    // 3. Current location matches displayed location (transition fully complete)
+    // 4. We are on the home page OR signin page (since logouts may redirect there)
+    if (!loading && pendingNotification && location.pathname === displayLocation.pathname && (location.pathname === '/' || location.pathname === '/signin')) {
+      // Add a small delay so it appears smoothly
+      const timer = setTimeout(() => {
+        showNotification(pendingNotification)
+        setPendingNotification(null)
+      }, 500)
+      return () => clearTimeout(timer)
+    }
+  }, [loading, pendingNotification, location, displayLocation])
+
   // Handle Auth State
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -73,9 +91,11 @@ function App() {
   const handleSignIn = async () => {
     try {
       const result = await signInWithPopup(auth, googleProvider)
-      // Notification will show after sign in
-      showNotification(`Berhasil masuk sebagai ${result.user.displayName}`)
-      // Explicit navigation to ensure redirection happens if the route doesn't automatically redirect
+      
+      // Store notification to show after loading finishes
+      setPendingNotification(`Berhasil masuk sebagai ${result.user.displayName}`)
+      
+      // Navigate to home page
       navigate('/')
     } catch (error) {
       console.error("Error signing in: ", error)
@@ -86,7 +106,9 @@ function App() {
   const handleSignOut = async () => {
     try {
       await signOut(auth)
-      showNotification("Anda berhasil logout!")
+      // Store notification to show after loading finishes
+      setPendingNotification("Anda berhasil logout!")
+      // Navigate to home page
       navigate('/')
     } catch (error) {
       console.error("Error signing out: ", error)
@@ -158,7 +180,7 @@ function App() {
           {/* Sign In Route */}
           <Route 
             path="/signin" 
-            element={!user ? <SignIn onSignIn={handleSignIn} /> : <Navigate to="/profile" replace />} 
+            element={!user ? <SignIn onSignIn={handleSignIn} /> : <Navigate to="/" replace />} 
           />
           
           {/* Admin Routes */}
