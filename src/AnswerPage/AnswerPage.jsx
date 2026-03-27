@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom'; 
-import GlassCard from '../components/GlassCard/GlassCard';
+import GlassCard from '../Components/GlassCard/GlassCard';
 import './AnswerPage.css';
 import pageBg from '../assets/page-background.svg';
 
@@ -14,7 +14,7 @@ const AnswerPage = () => {
       
       <div className="answer-header">
         {/* Tombol kembali ke ScorePage */}
-        <button className="back-arrow-btn" onClick={() => navigate(-1)}>←</button>
+        <button className="back-arrow-btn" onClick={() => navigate(-1)}><span>&#10094;</span></button>
         <h1 className="answer-title-text">Hasil Jawaban</h1>
       </div>
 

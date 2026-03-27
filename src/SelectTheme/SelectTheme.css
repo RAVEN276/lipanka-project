@@ -27,6 +27,38 @@
     padding: 40px 0;
 }
 
+/* Select Theme Back Button - Matching SignIn/Leaderboard/Profile Back Button */
+.select-theme-back-button {
+  position: absolute;
+  top: 40px;
+  left: 40px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 20;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.select-theme-back-button:hover {
+  background: rgba(0, 0, 0, 0.6);
+  transform: scale(1.1);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.select-theme-back-button svg {
+  margin-right: 2px; /* Visual adjustment */
+}
+
 .select-theme-title {
     font-family: 'Luckiest Guy', cursive;
     font-size: 80px;
@@ -67,21 +99,21 @@
     outline: none;
 }
 
-.slick-center .theme-card {
+.slick-center .select-theme-card {
     transform: scale(1.05);
     z-index: 2;
     box-shadow: 3px 10px 32px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3);
     margin-top: -1rem;
 }
 
-.slick-slide:not(.slick-center) .theme-card {
+.slick-slide:not(.slick-center) .select-theme-card {
     opacity: 0.8;
     transform: scale(0.95);
     z-index: 1;
 }
 
 /* Theme card styling */
-.theme-card {
+.select-theme-card {
     background: #00000040;
     border-radius: 20px;
     margin: 20px 0 20px 0;
@@ -97,31 +129,55 @@
     transition: all 0.3s ease;
 }
 
-.theme-image {
+.select-theme-image {
     width: auto;
     min-height: 21rem;
     margin-top: -5rem;
+    animation: floatAnimation 3s ease-in-out infinite;
 }
 
-.theme-name {
+@keyframes floatAnimation {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+.select-theme-name {
     font-family: 'Fredoka', cursive;
     font-size: 25px;
     color: #FFFFFF;
-    margin: 0 16px;
+    margin: 0 0 5px 0;
     font-weight: 700;
+    line-height: 1.2;
+    text-align: left;
 }
 
-.theme-description {
+.select-theme-description {
     font-family: 'Fredoka', cursive;
     font-size: 18px;
     color: #FFFFFF;
-    margin: 0 16px;
+    margin: 0;
+    text-align: left;
 }
 
-.theme-name-description-play {
+.select-theme-name-description {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    margin-left: 16px; 
+    flex: 1;
+}
+
+.select-theme-name-description-play {
     display: flex;
     flex-direction: row;
     margin-top: auto;
+    width: 100%;
+    align-items: center; 
 }
 
 .play-button {
@@ -192,12 +248,12 @@
 }
 
 /* Center mode styling */
-.slick-center .theme-card {
+.slick-center .select-theme-card {
     transform: scale(1.05);
     z-index: 2;
 }
 
-.slick-slide:not(.slick-center) .theme-card {
+.slick-slide:not(.slick-center) .select-theme-card {
     opacity: 0.8;
     transform: scale(0.95);
     z-index: 1;

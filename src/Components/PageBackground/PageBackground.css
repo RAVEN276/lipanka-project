@@ -12,13 +12,20 @@
   justify-content: center;
 }
 
+.page-background-wrapper.scrollable {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
 .page-background-img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  position: fixed; /* Changed from absolute to fixed to ensure it stays in place during scroll */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   object-fit: cover;
   z-index: 0;
+  pointer-events: none; /* Ensure clicks pass through */
 }
 
 .page-background-content {
@@ -29,4 +36,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.page-background-wrapper.scrollable .page-background-content {
+  min-height: 100vh;
+  height: 100vh; /* Fixed height to support internal scrolling layouts */
+  display: flex;
+  flex-direction: column;
+  padding: 0; /* Remove padding as the internal layout handles it */
+  justify-content: flex-start;
+  align-items: stretch;
+}
+
+/* Reset for child elements */
+.page-background-wrapper.scrollable .page-background-content > * {
+  width: 100%; 
 }

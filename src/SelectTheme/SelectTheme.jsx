@@ -9,7 +9,7 @@ import React from "react";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const themes = [
     {
@@ -91,35 +91,26 @@ function SelectTheme() {
             {/* Background */}
             <img src={pageBackground} alt="Background" className="page-bg" />
             <div className="select-theme-content">
-                <button 
-                    className="theme-back-btn"
+                <div 
+                    className="select-theme-back-button" 
                     onClick={() => navigate('/')}
-                    type="button"
-                    aria-label="Kembali ke halaman utama"
-                    >
-                    <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        style={{ width: '24px', height: '24px' }}
-                    >
-                        <path d="M15 18l-6-6 6-6" />
+                >
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M15 19l-7-7 7-7" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
-                    </button>
+                </div>
+
                 <h1 className="select-theme-title">SELECT YOUR THEME</h1>
                 <p className="select-theme-subtitle">Have fun playing <strong>LIPANKA</strong></p>
                 <div className="theme-options">
                     <Slider {...settings}>
                     {themes.map((theme, index) => (
-                        <div key={index} className="theme-card">
-                            <img src={theme.img} alt={theme.name} className="theme-image" />
-                            <div className="theme-name-description-play">
-                                <div className="theme-name-description">
-                                <h2 className="theme-name">{theme.name}</h2>
-                                <p className="theme-description">{theme.description}</p>
+                        <div key={index} className="select-theme-card">
+                            <img src={theme.img} alt={theme.name} className="select-theme-image" />
+                            <div className="select-theme-name-description-play">
+                                <div className="select-theme-name-description">
+                                <h2 className="select-theme-name">{theme.name}</h2>
+                                <p className="select-theme-description">{theme.description}</p>
                                 </div>
                                 {currentSlide === index && (
                                     <button className="play-button" onClick={() => handlePlayClick(theme)}>
@@ -132,9 +123,6 @@ function SelectTheme() {
                     ))}
                     </Slider>
                 </div>
-                <footer className="select-theme-footer">
-                    <Link to="/credits" className="select-theme-footer-text">©2026 Information Systems Division of UPJ. All rights reserved.</Link>
-                </footer>
             </div>
         </div>
     )
